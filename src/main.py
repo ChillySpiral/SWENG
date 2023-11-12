@@ -1,18 +1,13 @@
-from entity.post import Post
-from entity.user import User, User_DTO
-from repository.dbaccess import DBAccess
+from repository.dbdict import DBAccess
+from src.entity.post import PostDTO
+from src.entity.user import UserDTO
 
 
 def main():
     ctx = DBAccess()
-    user1 = User_DTO()
-    user1.Id = 0
-    user1.Username = "Test"
-    user1.Password = "Test1"
-
-    ctx.insert_user(user1)
-
-
+    ctx.insert_post(PostDTO(1))
+    ctx.insert_user(UserDTO(1))
+    print(ctx.get_user(1).Id)
 
 if __name__ == '__main__':
     main()
