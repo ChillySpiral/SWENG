@@ -163,3 +163,5 @@ cython_debug/
 .idea/modules.xml
 .idea/misc.xml
 .idea/inspectionProfiles/profiles_settings.xml
+/frontend/Zephyr/obj
+/frontend/Zephyr/.vs/Zephyr
