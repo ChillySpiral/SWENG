@@ -1,6 +1,5 @@
 from src.entity.user import UserDTO
 from src.entity.post import PostDTO
-from operator import itemgetter
 
 
 class DBAccess:
@@ -17,10 +16,10 @@ class DBAccess:
         self.__data_dict = {}
 
     def insert_post(self, post: PostDTO):
-        self.__data_dict["post" + str(post.Id)] = post
+        self.__data_dict["post" + str(post.post_id)] = post
 
     def insert_user(self, user: UserDTO):
-        self.__data_dict["user" + str(user.Id)] = user
+        self.__data_dict["user" + str(user.user_id)] = user
 
     def get_user(self, id: int) -> UserDTO:
         return self.__data_dict["user" + str(id)]

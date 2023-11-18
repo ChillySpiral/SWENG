@@ -11,7 +11,7 @@ def test_insert_get_post():
     dba_default.insert_post(PostDTO(test_id))
     result = dba_default.get_post(test_id)
 
-    assert result.Id == test_id
+    assert result.user_id == test_id
 
 
 def test_insert_get_user():
@@ -20,7 +20,7 @@ def test_insert_get_user():
     dba_default.insert_user(UserDTO(test_id))
     result = dba_default.get_user(test_id)
 
-    assert result.Id == test_id
+    assert result.user_id == test_id
 
 
 def test_insert_get_all_posts():

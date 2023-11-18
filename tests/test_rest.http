@@ -1,0 +1,15 @@
+POST http://127.0.0.1:8000/create/posts/
+Content-Type: application/json
+
+{
+  "post_id" : 1,
+  "user_id" : 1
+}
+
+###
+GET http://127.0.0.1:8000/read/posts/
+Accept: application/json
+
+###
+GET http://127.0.0.1:8000/read/posts/1
+Accept: application/json
