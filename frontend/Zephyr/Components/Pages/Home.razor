@@ -1,7 +1,9 @@
 ﻿@page "/"
+@using Zephyr.Components.Controls.Feed
 
 <PageTitle>Home</PageTitle>
-
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
+<PostInput></PostInput>
+@foreach (var post in _postViewModelList)
+{
+    <PostItem Data="post"></PostItem>
+}

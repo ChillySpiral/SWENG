@@ -1,10 +1,15 @@
+using Radzen;
 using Zephyr.Components;
+using Zephyr.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddRadzenComponents();
+builder.Services.AddTransient<IBusinessLayer, BusinessLayer>();
 
 var app = builder.Build();
 

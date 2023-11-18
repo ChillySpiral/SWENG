@@ -1,0 +1,8 @@
+﻿<div class="col-md-6 col-lg-4 p-3">
+    <RadzenCard>
+        <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Let the world know...</RadzenText>
+        <RadzenTextArea Change=@(args => {}) class="w-100" />
+        <RadzenFileInput @bind-Value=@ImageUrl @bind-FileName=@_fileName @bind-FileSize=@_fileSize TValue="string" class="w-100" 
+                         Change=@(args => {}) />
+    </RadzenCard>
+</div>
