@@ -1,9 +1,7 @@
-﻿<RadzenCard Variant="Variant.Filled" Class="rz-my-12 rz-mx-auto" Style="max-width: 420px">
-    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Start" Gap="1rem" Class="rz-p-4">
-        <RadzenImage Path="@Data.ImageUrl" Style="width: 100px; height: 100px; border-radius: 50%;" />
-        <RadzenStack Gap="0">
-            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Employee</RadzenText>
-            <RadzenText TextStyle="TextStyle.Body1"><b>@Data.User.Name</b></RadzenText>
-        </RadzenStack>
+﻿<RadzenCard Variant="Variant.Filled" Style="margin-block:5px;">
+    <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-p-4">
+        <RadzenText TextStyle="TextStyle.Body1"><b onclick="@Test" onmouseover="" style="cursor: pointer;">@Data.User.Name</b></RadzenText>
+        <RadzenText TextStyle="TextStyle.Overline"><b>@Data.Text</b></RadzenText>
+        <RadzenImage Path="@Data.ImageUrl" Style="width: 400px; height: 400px; border-radius: 2%; margin-left:auto; margin-right:auto;"/>
     </RadzenStack>
 </RadzenCard>

@@ -8,5 +8,9 @@ namespace Zephyr.Components.Controls.Feed
         [Parameter]
         public PostViewModel Data { get; set; }
 
+        private void Test()
+        {
+            int i = 0;
+        }
     }
 }
