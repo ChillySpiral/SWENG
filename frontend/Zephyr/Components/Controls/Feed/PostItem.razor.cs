@@ -8,9 +8,12 @@ namespace Zephyr.Components.Controls.Feed
         [Parameter]
         public PostViewModel Data { get; set; }
 
-        private void Test()
+        [Inject] 
+        private NavigationManager Navigation { get; set; }
+
+        private void NavigateToUser()
         {
-            int i = 0;
+            Navigation.NavigateTo($"/profile/{Data.User.Id}", true);
         }
     }
 }

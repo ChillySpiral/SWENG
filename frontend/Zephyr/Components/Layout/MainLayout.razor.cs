@@ -2,12 +2,11 @@
 {
     public partial class MainLayout
     {
-        bool _sidebarExpanded = false;
+        public bool SidebarExpanded;
 
         private void ToggleSidebar()
         {
-            _sidebarExpanded = !_sidebarExpanded;
-            StateHasChanged();
+            SidebarExpanded = !SidebarExpanded;
         }
     }
 }

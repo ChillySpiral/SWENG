@@ -1,6 +1,6 @@
 ﻿<RadzenCard Variant="Variant.Filled" Style="margin-block:5px;">
     <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-p-4">
-        <RadzenText TextStyle="TextStyle.Body1"><b onclick="@Test" onmouseover="" style="cursor: pointer;">@Data.User.Name</b></RadzenText>
+        <RadzenText TextStyle="TextStyle.Body1"><b onclick="@NavigateToUser" onmouseover="" style="cursor: pointer;">@Data.User.Name</b></RadzenText>
         <RadzenText TextStyle="TextStyle.Overline"><b>@Data.Text</b></RadzenText>
         <RadzenImage Path="@Data.ImageUrl" Style="width: 400px; height: 400px; border-radius: 2%; margin-left:auto; margin-right:auto;"/>
     </RadzenStack>
