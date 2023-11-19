@@ -73,16 +73,27 @@ public class BusinessLayer : IBusinessLayer
 
     public List<PostViewModel> GetAllPosts()
     {
-        return _postViewModelList;
+        var res = _postViewModelList.ToList();
+        res.Reverse();
+        return res;
     }
 
     public List<PostViewModel> GetUserPosts(int UserId)
     {
-        return _postViewModelList.Where(x => x.User.Id.Equals(UserId)).ToList();
+        var res = _postViewModelList.Where(x => x.User.Id.Equals(UserId)).ToList();
+        res.Reverse();
+        return res;
     }
 
     public UserViewModel GetUser(int UserId)
     {
         return _userViewModelList.First(x => x.Id.Equals(UserId));
+    }
+
+    public void AddPost(PostViewModel post)
+    {
+        post.User = GetUser(post.User.Id);
+        post.Id = _postViewModelList.Count + 1;
+        _postViewModelList.Add(post);
     }
 }

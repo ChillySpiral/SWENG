@@ -9,5 +9,7 @@ namespace Zephyr.Data
         public List<PostViewModel> GetUserPosts(int UserId);
 
         public UserViewModel GetUser(int UserId);
+
+        public void AddPost(PostViewModel post);
     }
 }

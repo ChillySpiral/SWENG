@@ -9,7 +9,12 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddRadzenComponents();
-builder.Services.AddTransient<IBusinessLayer, BusinessLayer>();
+builder.Services.AddSingleton<IBusinessLayer, BusinessLayer>();
+
+builder.Services.AddServerSideBlazor().AddHubOptions(o =>
+{
+    o.MaximumReceiveMessageSize = 10 * 1024 * 1024;
+});
 
 var app = builder.Build();
 

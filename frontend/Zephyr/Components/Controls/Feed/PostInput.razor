@@ -1,7 +1,6 @@
 ﻿<RadzenCard Style="padding-bottom: 50px;">
     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Let the world know...</RadzenText>
-    <RadzenTextArea Style="max-height: 400px; min-height: 150px;" MaxLength=256 Change=@(args => {}) class="w-100" />
-    <RadzenFileInput @bind-Value=@ImageUrl @bind-FileName=@_fileName @bind-FileSize=@_fileSize TValue="string" class="w-100" 
-                     Change=@(args => {}) />
-    <RadzenButton Click=@(args => {}) Text="Posten" ButtonStyle="ButtonStyle.Primary" Style="float:right; margin-top: 10px;"/>
+    <RadzenTextArea Style="max-height: 400px; min-height: 150px;" MaxLength=256 @bind-Value="@Text" class="w-100" />
+    <RadzenFileInput @bind-Value=@ImageUrl TValue="string" class="w-100"/>
+    <RadzenButton Click="OnPost" Text="Posten" ButtonStyle="ButtonStyle.Primary" Style="float:right; margin-top: 10px;" />
 </RadzenCard>

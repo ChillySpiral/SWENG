@@ -3,7 +3,7 @@
 
 <PageTitle>Home</PageTitle>
 <div Style="max-width: 600px; background-color: transparent; margin-left:auto; margin-right:auto;">
-    <PostInput></PostInput>
+    <PostInput OnPosted="OnPosted"></PostInput>
     @foreach (var post in _postViewModelList)
     {
         <PostItem Data="post"></PostItem>

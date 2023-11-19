@@ -15,5 +15,11 @@ namespace Zephyr.Components.Pages
         {
             _postViewModelList = _businessLayer.GetAllPosts();
         }
+
+        private void OnPosted()
+        {
+            _postViewModelList = _businessLayer.GetAllPosts();
+            StateHasChanged();
+        }
     }
 }
