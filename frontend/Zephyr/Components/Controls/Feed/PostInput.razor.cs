@@ -12,17 +12,9 @@ namespace Zephyr.Components.Controls.Feed
         [Inject]
         public IBusinessLayer BusinessLayer { get; set; }
 
-        private string Text { get; set; }
+        private string Text { get; set; } = string.Empty;
 
-        private string _imageUrl;
-        public string ImageUrl
-        {
-            get => _imageUrl;
-            set
-            {
-                _imageUrl = value;
-            }
-        }
+        public string? ImageUrl { get; set; } = null;
 
         private async void OnPost()
         {
