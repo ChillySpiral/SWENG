@@ -11,6 +11,8 @@ db_access = DBAccess()
 
 
 class RestAPI:
+    def __init__(self):
+        app.openapi = RestAPI.generate_openapi_contract()
 
     @staticmethod
     @app.post("/create/posts/", tags=["Create", "Posts"])
@@ -44,4 +46,4 @@ class RestAPI:
         return app.openapi_schema
 
 
-app.openapi = RestAPI.generate_openapi_contract()
+
