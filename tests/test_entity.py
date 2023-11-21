@@ -1,16 +1,17 @@
 import pytest
 
 from src.entity.user import UserDTO
+from src.entity.post import PostDTO
 
 
 @pytest.fixture()
 def user_dto_default():
-    return UserDTO(0)
+    return UserDTO()
 
 
 @pytest.fixture()
 def post_dto_default():
-    return UserDTO(0)
+    return PostDTO()
 
 
 def test_UserDTO_set_id():
