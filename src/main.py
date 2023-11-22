@@ -1,6 +1,6 @@
 from src.entity.post import PostDTO
 from src.entity.user import UserDTO
-from repository.dbdict import DBAccess
+from repository.db_access import DBAccess
 
 
 def main():

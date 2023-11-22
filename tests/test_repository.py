@@ -2,7 +2,7 @@ import pytest
 
 from src.entity.user import UserDTO
 from src.entity.post import PostDTO
-from src.repository.dbdict import DBAccess
+from src.repository.db_access import DBAccess
 
 
 def test_insert_get_post():

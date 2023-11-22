@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from src.endpoints.rest_api import app
-from src.repository.dbdict import DBAccess
+from src.repository.db_access import DBAccess
 from src.entity.user import UserDTO
 from src.entity.post import PostDTO
 

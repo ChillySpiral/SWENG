@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
 from src.entity.post import PostDTO
-from src.repository.dbdict import DBAccess
+from src.repository.db_access import DBAccess
 
 app = FastAPI()
 db_access = DBAccess()
