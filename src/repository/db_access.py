@@ -15,10 +15,10 @@ class DBAccess:
     def __int__(self):
         self.__data_dict = {}
 
-    def insert_post(self, post: PostDTO):
+    def create_post(self, post: PostDTO):
         self.__data_dict["post" + str(post.post_id)] = post
 
-    def insert_user(self, user: UserDTO):
+    def create_user(self, user: UserDTO):
         self.__data_dict["user" + str(user.user_id)] = user
 
     def get_user(self, id: int) -> UserDTO:
@@ -28,6 +28,10 @@ class DBAccess:
         return self.__data_dict["post" + str(id)]
 
     def get_all_posts(self):
+        return [value for key, value in self.__data_dict.items() if "post" in key]
+
+    # ToDo: implement logic to return all posts by user ID
+    def get_posts_by_user(self, user_id: int):
         return [value for key, value in self.__data_dict.items() if "post" in key]
 
     def get_all_users(self):

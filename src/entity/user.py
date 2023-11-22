@@ -4,8 +4,8 @@ from pydantic import BaseModel, Field
 
 class UserDTO(BaseModel):
     user_id: int = Field()
-    Username: str = ""
-    Password: str = ""
+    username: str = ""
+    password: str = ""
 
     def as_json(self):
         return json.dumps(self, default=lambda o: o.__dict__)
