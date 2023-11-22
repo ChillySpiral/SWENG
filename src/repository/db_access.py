@@ -24,7 +24,7 @@ class DBAccess:
     def get_user(self, id: int) -> UserDTO:
         return self.__data_dict["user" + str(id)]
 
-    def get_post(self, id: int) -> UserDTO:
+    def get_post(self, id: int) -> PostDTO:
         return self.__data_dict["post" + str(id)]
 
     def get_all_posts(self):
