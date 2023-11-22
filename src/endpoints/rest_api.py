@@ -24,7 +24,7 @@ class RestAPI:
         return db_access.get_post(post_id)
 
     @staticmethod
-    @app.get("/posts/{user_id}", tags=["Get", "Posts"])
+    @app.get("/posts/user/{user_id}", tags=["Get", "Posts"])
     async def get_post_by_user(user_id: int) -> list[PostDTO]:
         return db_access.get_posts_by_user(user_id)
 
