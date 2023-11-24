@@ -10,20 +10,20 @@ class UserModel(BaseModel):
 class UserBioModel(BaseModel):
     username: str
     password: str
-    bio: str | None = None
+    bio: str = None
 
 
 class UserResponse(BaseModel):
     user_id: UUID
     username: str
-    bio: str | None = None
+    bio: str = None
 
 
 class UserUpdateModel(BaseModel):
     user_id: UUID
     username: str
     password: str
-    bio: str | None = None
+    bio: str = None
 
 
 class UserLoginResponse(BaseModel):
