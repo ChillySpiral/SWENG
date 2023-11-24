@@ -3,7 +3,7 @@ from fastapi.openapi.utils import get_openapi
 
 from uuid import UUID
 from datetime import datetime
-from src.model.user_model import UserModel, UserUpdateModel, UserResponse, UserLoginResponse
+from src.model.user_model import UserModel, UserUpdateModel, UserBioModel, UserResponse, UserLoginResponse
 from src.model.post_model import PostModel, PostCreateModel, PostResponse
 from src.repository.crud import CRUD
 
@@ -22,12 +22,12 @@ class RestAPI:
         return db_access.get_user(user_id)
 
     @staticmethod
-    @app.post("/user/", tags=["Users"])
-    async def create_user(user: UserModel) -> UserResponse:
+    @app.post("/user", tags=["Users"])
+    async def create_user(user: UserBioModel) -> UserResponse:
         return db_access.insert_user(user)
 
     @staticmethod
-    @app.put("/user/", tags=["Users"])
+    @app.put("/user", tags=["Users"])
     async def update_user(user: UserUpdateModel) -> UserResponse:
         return db_access.update_user(user)
 
@@ -37,12 +37,12 @@ class RestAPI:
         return db_access.delete_user(user_id)
 
     @staticmethod
-    @app.get("/users/", tags=["Users"])
+    @app.get("/users", tags=["Users"])
     async def get_all_users() -> list[UserResponse]:
         return db_access.get_all_users()
 
     @staticmethod
-    @app.post("/user/login/", tags=["Users"])
+    @app.post("/user/login", tags=["Users"])
     async def login_user(user: UserModel) -> UserLoginResponse:
         return db_access.login_user(user)
 
@@ -52,12 +52,12 @@ class RestAPI:
         return db_access.get_post(post_id)
 
     @staticmethod
-    @app.post("/post/", tags=["Posts"])
+    @app.post("/post", tags=["Posts"])
     async def create_post(post: PostCreateModel) -> PostResponse:
         return db_access.insert_post(post)
 
     @staticmethod
-    @app.put("/post/", tags=["Posts"])
+    @app.put("/post", tags=["Posts"])
     async def update_post(post: PostModel) -> PostResponse:
         return db_access.update_post(post)
 
@@ -67,7 +67,7 @@ class RestAPI:
         return db_access.delete_post(post_id)
 
     @staticmethod
-    @app.get("/posts/", tags=["Posts"])
+    @app.get("/posts", tags=["Posts"])
     async def get_all_posts() -> list[PostResponse]:
         return db_access.get_all_posts()
 
@@ -77,7 +77,7 @@ class RestAPI:
         return db_access.get_posts_by_user(user_id)
 
     @staticmethod
-    @app.get("/post/newest/", tags=["Posts"])
+    @app.get("/post/newest", tags=["Posts"])
     async def get_newest_post() -> PostResponse:
         data: list[PostResponse] = db_access.get_all_posts()
         idx_newest = 0
