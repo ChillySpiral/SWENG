@@ -7,18 +7,18 @@ class PostModel(BaseModel):
     post_id: UUID
     user_id: UUID
     text: str
-    image: str | None = None
+    image: str = ""
 
 
 class PostCreateModel(BaseModel):
     user_id: UUID
     text: str
-    image: str | None = None
+    image: str = None
 
 
 class PostResponse(BaseModel):
     post_id: UUID
     user_id: UUID
     text: str
-    image: str | None = None
+    image: str = None
     posted: datetime
