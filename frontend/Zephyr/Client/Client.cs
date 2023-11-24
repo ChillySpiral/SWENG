@@ -1456,7 +1456,7 @@ namespace Zephyr.Client
         [System.Text.Json.Serialization.JsonPropertyName("image")]
 
         [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
-        public string Image { get; set; }
+        public string Image { get; set; } = "";
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 
@@ -1532,7 +1532,7 @@ namespace Zephyr.Client
         [System.Text.Json.Serialization.JsonPropertyName("bio")]
 
         [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
-        public string Bio { get; set; }
+        public string Bio { get; set; } = "";
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 
@@ -1623,7 +1623,7 @@ namespace Zephyr.Client
         [System.Text.Json.Serialization.JsonPropertyName("bio")]
 
         [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
-        public string Bio { get; set; }
+        public string Bio { get; set; } = "";
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 
@@ -1661,7 +1661,7 @@ namespace Zephyr.Client
         [System.Text.Json.Serialization.JsonPropertyName("bio")]
 
         [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]
-        public string Bio { get; set; }
+        public string Bio { get; set; } = "";
 
         private System.Collections.Generic.IDictionary<string, object> _additionalProperties;
 
