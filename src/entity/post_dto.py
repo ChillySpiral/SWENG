@@ -7,5 +7,5 @@ class PostDTO(BaseModel):
     post_id: UUID
     user_id: UUID
     text: str
-    image: str = None
+    image: str = ""
     posted: datetime

@@ -7,7 +7,7 @@ class PostModel(BaseModel):
     post_id: UUID
     user_id: UUID
     text: str
-    image: str = None
+    image: str = ""
 
 
 class PostCreateModel(BaseModel):

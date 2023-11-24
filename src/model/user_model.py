@@ -23,7 +23,7 @@ class UserUpdateModel(BaseModel):
     user_id: UUID
     username: str
     password: str
-    bio: str = None
+    bio: str = ""
 
 
 class UserLoginResponse(BaseModel):
