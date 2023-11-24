@@ -1,7 +1,11 @@
+import uuid
+
 import pytest
 
-from src.entity.user import UserDTO
-from src.entity.post import PostDTO
+from src.entity.user_dto import UserDTO
+from src.entity.post_dto import PostDTO
+from uuid import UUID
+from datetime import datetime
 
 
 @pytest.fixture()
@@ -15,7 +19,7 @@ def post_dto_default():
 
 
 def test_UserDTO_set_id():
-    test_id: int = 1
+    test_id: UUID = uuid.uuid4()
     user_dto_default.Id = test_id
 
     assert user_dto_default.Id == test_id
@@ -36,14 +40,14 @@ def test_UserDTO_set_password():
 
 
 def test_PostDTO_set_id():
-    test_id: int = 1
+    test_id: UUID = uuid.uuid4()
     post_dto_default.Id = test_id
 
     assert post_dto_default.Id == test_id
 
 
 def test_PostDTO_set_user_id():
-    test_id: int = 1
+    test_id: UUID = uuid.uuid4()
     post_dto_default.user_id = test_id
 
     assert post_dto_default.user_id == test_id
