@@ -7,15 +7,23 @@ class UserModel(BaseModel):
     password: str
 
 
+class UserBioModel(BaseModel):
+    username: str
+    password: str
+    bio: str | None = None
+
+
 class UserResponse(BaseModel):
     user_id: UUID
     username: str
+    bio: str | None = None
 
 
 class UserUpdateModel(BaseModel):
     user_id: UUID
     username: str
     password: str
+    bio: str | None = None
 
 
 class UserLoginResponse(BaseModel):
