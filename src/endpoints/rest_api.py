@@ -1,56 +1,101 @@
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
-from src.entity.post import PostDTO
-from src.entity.user import UserDTO
-from src.repository.db_access import DBAccess
+from uuid import UUID
+from datetime import datetime
+from src.model.user_model import UserModel, UserUpdateModel, UserResponse, UserLoginResponse
+from src.model.post_model import PostModel, PostCreateModel, PostResponse
+from src.repository.crud import CRUD
 
 app = FastAPI()
-db_access = DBAccess()
+db_access = CRUD()
 
 
 class RestAPI:
+
     def __init__(self):
         app.openapi = RestAPI.generate_openapi_contract()
 
     @staticmethod
-    @app.post("/posts/create/", tags=["Create", "Posts"])
-    async def create_post(post: PostDTO):
-        db_access.create_post(post)
+    @app.get("/user/{user_id}", tags=["Users"])
+    async def get_user(user_id: UUID) -> UserResponse:
+        return db_access.get_user(user_id)
 
     @staticmethod
-    @app.get("/posts/{post_id}", tags=["Get", "Posts"])
-    async def get_post(post_id: int) -> PostDTO:
+    @app.post("/user/", tags=["Users"])
+    async def create_user(user: UserModel) -> UserResponse:
+        return db_access.insert_user(user)
+
+    @staticmethod
+    @app.put("/user/", tags=["Users"])
+    async def update_user(user: UserUpdateModel) -> UserResponse:
+        return db_access.update_user(user)
+
+    @staticmethod
+    @app.delete("/user/{user_id}", tags=["Users"])
+    async def delete_user(user_id: UUID) -> bool:
+        return db_access.delete_user(user_id)
+
+    @staticmethod
+    @app.get("/users/", tags=["Users"])
+    async def get_all_users() -> list[UserResponse]:
+        return db_access.get_all_users()
+
+    @staticmethod
+    @app.post("/user/login/", tags=["Users"])
+    async def login_user(user: UserModel) -> UserLoginResponse:
+        return db_access.login_user(user)
+
+    @staticmethod
+    @app.get("/post/{post_id}", tags=["Posts"])
+    async def get_post(post_id: UUID) -> PostResponse:
         return db_access.get_post(post_id)
 
     @staticmethod
-    @app.get("/posts/user/{user_id}", tags=["Get", "Posts"])
-    async def get_post_by_user(user_id: int) -> list[PostDTO]:
-        return db_access.get_posts_by_user(user_id)
+    @app.post("/post/", tags=["Posts"])
+    async def create_post(post: PostCreateModel) -> PostResponse:
+        return db_access.insert_post(post)
 
     @staticmethod
-    @app.get("/posts/", tags=["Get", "Posts"])
-    async def get_all_posts() -> list[PostDTO]:
+    @app.put("/post/", tags=["Posts"])
+    async def update_post(post: PostModel) -> PostResponse:
+        return db_access.update_post(post)
+
+    @staticmethod
+    @app.delete("/post/{user_id}", tags=["Posts"])
+    async def delete_post(post_id: UUID) -> bool:
+        return db_access.delete_post(post_id)
+
+    @staticmethod
+    @app.get("/posts/", tags=["Posts"])
+    async def get_all_posts() -> list[PostResponse]:
         return db_access.get_all_posts()
 
     @staticmethod
-    @app.post("/users/create/", tags=["Create", "Users"])
-    async def create_user(user: UserDTO):
-        db_access.create_user(user)
+    @app.get("/posts/user/{user_id}", tags=["Posts"])
+    async def get_posts_by_user(user_id: UUID) -> list[PostResponse]:
+        return db_access.get_posts_by_user(user_id)
 
     @staticmethod
-    @app.get("/users/{user_id}", tags=["Get", "Users"])
-    async def get_post(user_id: int) -> UserDTO:
-        return db_access.get_user(user_id)
+    @app.get("/post/newest/", tags=["Posts"])
+    async def get_newest_post() -> PostResponse:
+        data: list[PostResponse] = db_access.get_all_posts()
+        idx_newest = 0
+        dt_max = datetime(1900, 1, 1, 1, 0)
+        for idx, post in enumerate(data):
+            if post.posted > dt_max:
+                dt_max = post.posted
+                idx_newest = idx
+        return data[idx_newest]
 
     @staticmethod
     def generate_openapi_contract():
         if app.openapi_schema:
             return app.openapi_schema
         openapi_schema = get_openapi(
-            title="SWENG Social Media",
-            version="0.0.1",
-            description="This is a OpenAPI Schema which manages users and posts in a dictionary",
+            title="SWENG Social Media App",
+            version="0.0.2",
+            description="This is a OpenAPI Schema which manages users and posts",
             routes=app.routes,
         )
         openapi_schema["info"]["x-logo"] = {
@@ -58,6 +103,3 @@ class RestAPI:
         }
         app.openapi_schema = openapi_schema
         return app.openapi_schema
-
-
-
