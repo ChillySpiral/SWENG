@@ -20,18 +20,19 @@ class DBTemp:
         self.table_users = []
         self.table_posts = []
 
-    def insert_user(self, username: str, password: str) -> UserDTO:
-        new = UserDTO(user_id=uuid.uuid4(), username=username, password=password)
+    def insert_user(self, username: str, password: str, bio: str) -> UserDTO:
+        new = UserDTO(user_id=uuid.uuid4(), username=username, password=password, bio=bio)
         self.table_users.append(new)
-        return UserDTO(user_id=new.user_id, username=new.username, password=new.password)
+        return UserDTO(user_id=new.user_id, username=new.username, password=new.password, bio=new.bio)
 
-    def update_user(self, user_id: UUID, username: str, password: str) -> UserDTO:
+    def update_user(self, user_id: UUID, username: str, password: str, bio: str) -> UserDTO:
         user_updated: UserDTO = UserDTO(
-            user_id=UUID('00000000000000000000000000000000'), username="error", password="error")
+            user_id=UUID('00000000000000000000000000000000'), username="error", password="error", bio="error")
         for user in self.table_users:
             if user.user_id == user_id:
                 user.username = username
                 user.password = password
+                user.bio = bio
                 user_updated = user
         return user_updated
 
@@ -45,7 +46,7 @@ class DBTemp:
 
     def get_user(self, user_id: UUID) -> UserDTO:
         user_hit: UserDTO = UserDTO(
-            user_id=UUID('00000000000000000000000000000000'), username="error", password="error")
+            user_id=UUID('00000000000000000000000000000000'), username="error", password="error", bio="error")
         for user in self.table_users:
             if user.user_id == user_id:
                 user_hit = user

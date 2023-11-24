@@ -2,7 +2,7 @@ from uuid import UUID
 from datetime import datetime
 from src.repository.db_temp import DBTemp
 from src.model.post_model import PostResponse, PostModel, PostCreateModel
-from src.model.user_model import UserModel, UserResponse, UserLoginResponse, UserUpdateModel
+from src.model.user_model import UserModel, UserResponse, UserLoginResponse, UserUpdateModel, UserBioModel
 
 # Set up and initialize database here
 db = DBTemp()
@@ -12,14 +12,14 @@ db = DBTemp()
 class CRUD:
 
     @staticmethod
-    def insert_user(user: UserModel) -> UserResponse:
-        data = db.insert_user(user.username, user.password)
-        return UserResponse(user_id=data.user_id, username=data.username)
+    def insert_user(user: UserBioModel) -> UserResponse:
+        data = db.insert_user(user.username, user.password, user.bio)
+        return UserResponse(user_id=data.user_id, username=data.username, bio=data.bio)
 
     @staticmethod
     def update_user(user: UserUpdateModel) -> UserResponse:
-        data = db.update_user(user.user_id, user.username, user.password)
-        return UserResponse(user_id=data.user_id, username=data.username)
+        data = db.update_user(user.user_id, user.username, user.password, user.bio)
+        return UserResponse(user_id=data.user_id, username=data.username, bio=data.bio)
 
     @staticmethod
     def delete_user(user_id: UUID) -> bool:
@@ -28,14 +28,14 @@ class CRUD:
     @staticmethod
     def get_user(user_id: UUID) -> UserResponse:
         data = db.get_user(user_id)
-        return UserResponse(user_id=data.user_id, username=data.username)
+        return UserResponse(user_id=data.user_id, username=data.username, bio=data.bio)
 
     @staticmethod
     def get_all_users() -> list[UserResponse]:
         data = db.get_all_users()
         list_out: list[UserResponse] = []
         for user in data:
-            list_out.append(UserResponse(user_id=user.user_id, username=user.username))
+            list_out.append(UserResponse(user_id=user.user_id, username=user.username, bio=user.bio))
         return list_out
 
     # ToDo: maybe refactor to separate layer responsible for handling login (but it's a 2 ECTS course...)
