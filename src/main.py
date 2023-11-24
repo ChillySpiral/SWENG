@@ -1,6 +1,6 @@
-from src.entity.post import PostDTO
-from src.entity.user import UserDTO
-from repository.db_access import DBAccess
+from src.entity.post_dto import PostDTO
+from src.entity.user_dto import UserDTO
+from repository.crud import CRUD
 
 
 def main():
