@@ -1,4 +1,5 @@
 using Radzen;
+using Blazored.SessionStorage;
 using Zephyr.Components;
 using Zephyr.Data;
 
@@ -9,6 +10,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddRadzenComponents();
+builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddSingleton<IBusinessLayer, BusinessLayer>();
 
 builder.Services.AddServerSideBlazor().AddHubOptions(o =>
