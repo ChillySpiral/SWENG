@@ -14,7 +14,7 @@ namespace Zephyr.Components.Controls.UserManagement
         public ISessionStorageService? SessionStorageService { get; set; }
 
         [Inject]
-        public IBusinessLayer BusinessLayer { get; set; }
+        public IBusinessLayer? BusinessLayer { get; set; }
 
         public void OnRegisterClick()
         {
