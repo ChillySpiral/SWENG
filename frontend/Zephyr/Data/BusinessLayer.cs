@@ -4,7 +4,7 @@ namespace Zephyr.Data;
 
 public class BusinessLayer : IBusinessLayer
 {
-    private Client.Client Client { get; set; } = new("127.0.0.1:8000", new HttpClient());
+    private Client.Client Client { get; set; } = new("http://127.0.0.1:8000", new HttpClient());
 
     public async Task<UserViewModel?> GetUser(Guid userId)
     {

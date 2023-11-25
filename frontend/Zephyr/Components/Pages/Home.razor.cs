@@ -7,18 +7,18 @@ namespace Zephyr.Components.Pages
     public partial class Home
     {
         [Inject]
-        private IBusinessLayer _businessLayer { get; set; }
+        public required IBusinessLayer BusinessLayer { get; set; }
 
-        private List<PostViewModel> _postViewModelList = new();
+        private List<PostViewModel?> _postViewModelList = new();
 
-        protected override void OnInitialized()
+        protected override async void OnInitialized()
         {
-            _postViewModelList = _businessLayer.GetAllPosts();
+            _postViewModelList = await BusinessLayer.GetAllPosts();
         }
 
-        private void OnPosted()
+        private async void OnPosted()
         {
-            _postViewModelList = _businessLayer.GetAllPosts();
+            _postViewModelList = await BusinessLayer.GetAllPosts();
             StateHasChanged();
         }
     }

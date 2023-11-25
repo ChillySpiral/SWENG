@@ -1,7 +1,7 @@
-﻿using Blazored.SessionStorage;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Radzen;
 using Zephyr.Data;
+using Zephyr.Data.ViewModels;
 
 namespace Zephyr.Components.Controls.UserManagement
 {
@@ -10,24 +10,31 @@ namespace Zephyr.Components.Controls.UserManagement
         [Parameter] 
         public EventCallback<bool> OnRegister { get; set; }
 
-        [Inject]
-        public ISessionStorageService? SessionStorageService { get; set; }
+        [Parameter]
+        public EventCallback<UserViewModel> OnLoggedIn { get; set; }
 
         [Inject]
-        public IBusinessLayer? BusinessLayer { get; set; }
+        public required IBusinessLayer BusinessLayer { get; set; }
 
         public void OnRegisterClick()
         {
             OnRegister.InvokeAsync(true);
         }
 
-        public void OnLoginClick(LoginArgs logArgs)
+        public async void OnLoginClick(LoginArgs logArgs)
         {
-            Console.WriteLine("Login Clicked");
-            Console.WriteLine($"Username: {logArgs.Username}");
-            Console.WriteLine($"Password: {logArgs.Password}");
+            var res = await BusinessLayer.LoginUser(new UserViewModel()
+            {
+                Name = logArgs.Username,
+                Password = logArgs.Password
+            });
 
-            //ToDo Send Login Data
+            if (res != null)
+            {
+                await OnLoggedIn.InvokeAsync(res);
+            }
+
+            //ToDo Else Validation Message
         }
     }
 }

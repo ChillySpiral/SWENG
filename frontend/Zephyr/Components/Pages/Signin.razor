@@ -1,11 +1,14 @@
 ﻿@page "/signin"
 @using Zephyr.Components.Controls.UserManagement
-@if (IsLogin)
+@if (!UserLoggedIn)
 {
-    <Login OnRegister="OnRegisterNavigation"></Login>
-}
-else
-{
-    <Signup OnLogin="OnLoginNavigation"></Signup>
+    @if (IsLogin)
+    {
+        <Login OnRegister="OnRegisterNavigation" OnLoggedIn="OnUserLoggedIn"></Login>
+    }
+    else
+    {
+        <Signup OnLogin="OnLoginNavigation" OnLoggedIn="OnUserLoggedIn"></Signup>
+    }
 }
 
