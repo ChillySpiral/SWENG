@@ -41,9 +41,12 @@ namespace Zephyr.Components.Controls.Feed
                 var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
                 if (user != null)
                 {
-                    UserId = user.Id;
-                    UserLoggedIn = true;
-                    StateHasChanged();
+                    await InvokeAsync(() =>
+                    {
+                        UserId = user.Id;
+                        UserLoggedIn = true;
+                        StateHasChanged();
+                    });
                 }
                 else
                 {
@@ -52,9 +55,12 @@ namespace Zephyr.Components.Controls.Feed
             }
             else
             {
-                UserId = null;
-                UserLoggedIn = false;
-                StateHasChanged();
+                await InvokeAsync(() =>
+                {
+                    UserId = null;
+                    UserLoggedIn = false;
+                    StateHasChanged();
+                });
             }
         }
 
