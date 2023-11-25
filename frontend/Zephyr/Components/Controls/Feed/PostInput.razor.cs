@@ -90,7 +90,7 @@ namespace Zephyr.Components.Controls.Feed
                 {
                     Id = UserId.Value,
                 },
-                ImageUrl = ImageUrl,
+                ImageUrl = ImageUrl ?? string.Empty,
                 Text = Text
             };
 

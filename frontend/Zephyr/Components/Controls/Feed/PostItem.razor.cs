@@ -11,6 +11,12 @@ namespace Zephyr.Components.Controls.Feed
         [Inject] 
         private NavigationManager Navigation { get; set; }
 
+        protected override void OnParametersSet()
+        {
+            if (string.IsNullOrEmpty(Data.ImageUrl))
+                Data.ImageUrl = null;
+        }
+
         private void NavigateToUser()
         {
             Navigation.NavigateTo($"/profile/{Data.User.Id}", true);

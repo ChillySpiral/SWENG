@@ -9,17 +9,31 @@ namespace Zephyr.Components.Pages
         [Inject]
         public required IBusinessLayer BusinessLayer { get; set; }
 
+        [Inject]
+        public ILogger<Home> Logger { get; set; }
+
         private List<PostViewModel?> _postViewModelList = new();
 
-        protected override async void OnInitialized()
+        protected override async void OnParametersSet()
         {
-            _postViewModelList = await BusinessLayer.GetAllPosts();
-            StateHasChanged();
+            var posts = await BusinessLayer.GetAllPosts();
+            _postViewModelList = posts.OrderByDescending(x => x?.DateCreated).ToList();
+            try
+            {
+                StateHasChanged();
+            }
+            catch (ObjectDisposedException ex)
+            {
+                Logger.LogWarning($"Initializing Home: {ex.Message}");
+            }
         }
 
         private async void OnPosted()
         {
-            _postViewModelList = await BusinessLayer.GetAllPosts();
+            var newPosts = await BusinessLayer.GetAllPosts();
+            var selectedPosts = newPosts.Where(x => x != null && x.DateCreated > _postViewModelList.First()?.DateCreated).ToList();
+            var insertPosts = selectedPosts.OrderByDescending(x => x?.DateCreated).ToList();
+            _postViewModelList.InsertRange(0, insertPosts);
             StateHasChanged();
         }
     }

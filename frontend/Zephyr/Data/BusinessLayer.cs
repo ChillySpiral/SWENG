@@ -75,6 +75,20 @@ public class BusinessLayer : IBusinessLayer
         var res = new List<PostViewModel?>();
         if (response is { Count: > 0 })
             res.AddRange(response.Select(userResponse => userResponse.ConvertTo()));
+
+        var userDict = new Dictionary<Guid, UserViewModel>();
+        foreach (var post in res)
+        {
+            userDict.TryGetValue(post.User.Id, out var user);
+            if(user == null)
+            {
+                user = await GetUser(post.User.Id);
+                if(user != null)
+                    userDict.Add(post.User.Id, user);
+            }
+            post.User = user;
+        }
+
         return res;
     }
 
