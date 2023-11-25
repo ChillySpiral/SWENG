@@ -1,15 +1,13 @@
 ﻿using Zephyr.Data.ViewModels;
+using Zephyr.Client;
 
 namespace Zephyr.Data;
 
 public class BusinessLayer : IBusinessLayer
 {
-    public BusinessLayer()
-    {
+    private Client.Client? Client { get; set; } = new("127.0.0.1:8000", new HttpClient());
 
-    }
-
-    public UserViewModel? GetUser(int userId)
+    public UserViewModel? GetUser(Guid userId)
     {
         throw new NotImplementedException();
     }
@@ -24,7 +22,7 @@ public class BusinessLayer : IBusinessLayer
         throw new NotImplementedException();
     }
 
-    public UserViewModel? DeleteUser(int userId)
+    public UserViewModel? DeleteUser(Guid userId)
     {
         throw new NotImplementedException();
     }
@@ -49,12 +47,12 @@ public class BusinessLayer : IBusinessLayer
         throw new NotImplementedException();
     }
 
-    public PostViewModel? GetPost(int postId)
+    public PostViewModel? GetPost(Guid postId)
     {
         throw new NotImplementedException();
     }
 
-    public void RemovePost(int postId)
+    public void RemovePost(Guid postId)
     {
         throw new NotImplementedException();
     }
@@ -64,7 +62,7 @@ public class BusinessLayer : IBusinessLayer
         throw new NotImplementedException();
     }
 
-    public List<PostViewModel> GetUserPosts(int userId)
+    public List<PostViewModel> GetUserPosts(Guid userId)
     {
         throw new NotImplementedException();
     }

@@ -7,10 +7,10 @@ namespace Zephyr.Components.Pages
     public partial class Profile
     {
         [Parameter]
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
 
         [Inject]
-        public IBusinessLayer BusinessLayer { get; set; }
+        public IBusinessLayer? BusinessLayer { get; set; }
 
         private List<PostViewModel> _postViewModelList = new();
         private UserViewModel _userViewModel;

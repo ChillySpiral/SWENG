@@ -6,10 +6,10 @@ namespace Zephyr.Data
     {
         #region User
 
-        public UserViewModel? GetUser(int userId);
+        public UserViewModel? GetUser(Guid userId);
         public UserViewModel? CreateUser(UserViewModel newUser);
         public UserViewModel? UpdateUser(UserViewModel user);
-        public UserViewModel? DeleteUser(int userId);
+        public UserViewModel? DeleteUser(Guid userId);
         public UserViewModel? LoginUser(string username, string password);
         public List<UserViewModel?> GetAllUser();
 
@@ -19,10 +19,10 @@ namespace Zephyr.Data
 
         public PostViewModel? AddPost(PostViewModel post);
         public PostViewModel? UpdatePost(PostViewModel post);
-        public PostViewModel? GetPost(int postId);
-        public void RemovePost(int postId);
+        public PostViewModel? GetPost(Guid postId);
+        public void RemovePost(Guid postId);
         public List<PostViewModel> GetAllPosts();
-        public List<PostViewModel> GetUserPosts(int userId);
+        public List<PostViewModel> GetUserPosts(Guid userId);
         public PostViewModel? GetNewestPost();
 
         #endregion
