@@ -9,7 +9,15 @@
     <RadzenSidebar Expanded="SidebarExpanded" Responsive="false">
         <RadzenPanelMenu>
             <RadzenPanelMenuItem Text="Home" Icon="home" Path=""/>
-            <RadzenPanelMenuItem Text="Profile" Icon="account_box" Path="signin"/>
+            @if (UserLoggedIn)
+            {
+                <RadzenPanelMenuItem Text="@UserName" Icon="account_box" Path="@UserPath" />
+                <RadzenPanelMenuItem Text="Log out" Path="logout" />
+            }
+            else
+            {
+                <RadzenPanelMenuItem Text="Log in" Icon="account_box" Path="signin"/> 
+            }
         </RadzenPanelMenu>
     </RadzenSidebar>
     <RadzenBody>

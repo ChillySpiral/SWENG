@@ -1,6 +1,7 @@
 ﻿using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components;
 using Zephyr.Data.ViewModels;
+using Zephyr.Services;
 
 namespace Zephyr.Components.Pages
 {
@@ -11,6 +12,9 @@ namespace Zephyr.Components.Pages
 
         [Inject]
         public required ISessionStorageService SessionStorageService { get; set; }
+
+        [Inject]
+        public required IEventService EventService { get; set; }
 
         public bool IsLogin { get; set; } = true;
         public bool UserLoggedIn { get; set; } = false;
@@ -45,6 +49,7 @@ namespace Zephyr.Components.Pages
         public async void OnUserLoggedIn(UserViewModel loggedUser)
         {
             await SessionStorageService.SetItemAsync("user", loggedUser);
+            EventService.RaiseLoginEvent(true);
             UserLoggedIn = true;
             Navigation.NavigateTo("/");
         }
