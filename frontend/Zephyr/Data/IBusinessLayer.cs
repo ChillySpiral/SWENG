@@ -6,24 +6,24 @@ namespace Zephyr.Data
     {
         #region User
 
-        public UserViewModel? GetUser(Guid userId);
-        public UserViewModel? CreateUser(UserViewModel newUser);
-        public UserViewModel? UpdateUser(UserViewModel user);
-        public UserViewModel? DeleteUser(Guid userId);
-        public UserViewModel? LoginUser(string username, string password);
-        public List<UserViewModel?> GetAllUser();
+        public Task<UserViewModel?> GetUser(Guid userId);
+        public Task<UserViewModel?> CreateUser(UserViewModel newUser);
+        public Task<UserViewModel?> UpdateUser(UserViewModel user);
+        public Task<bool> DeleteUser(Guid userId);
+        public Task<UserViewModel?> LoginUser(UserViewModel user);
+        public Task<List<UserViewModel?>> GetAllUser();
 
         #endregion
 
         #region Post
 
-        public PostViewModel? AddPost(PostViewModel post);
-        public PostViewModel? UpdatePost(PostViewModel post);
-        public PostViewModel? GetPost(Guid postId);
-        public void RemovePost(Guid postId);
-        public List<PostViewModel> GetAllPosts();
-        public List<PostViewModel> GetUserPosts(Guid userId);
-        public PostViewModel? GetNewestPost();
+        public Task<PostViewModel?> AddPost(PostViewModel post);
+        public Task<PostViewModel?> UpdatePost(PostViewModel post);
+        public Task<PostViewModel?> GetPost(Guid postId);
+        public Task<bool> RemovePost(Guid postId);
+        public Task<List<PostViewModel?>> GetAllPosts();
+        public Task<List<PostViewModel?>> GetUserPosts(Guid userId);
+        public Task<PostViewModel?> GetNewestPost();
 
         #endregion
     }

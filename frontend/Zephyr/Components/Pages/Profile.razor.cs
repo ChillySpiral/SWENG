@@ -10,19 +10,19 @@ namespace Zephyr.Components.Pages
         public Guid UserId { get; set; }
 
         [Inject]
-        public IBusinessLayer? BusinessLayer { get; set; }
+        public IBusinessLayer BusinessLayer { get; set; }
 
-        private List<PostViewModel> _postViewModelList = new();
-        private UserViewModel _userViewModel;
+        private List<PostViewModel?> _postViewModelList = new();
+        private UserViewModel? _userViewModel;
 
         public bool IsLoading { get; set; } = true;
 
         public Profile() { }
 
-        protected override void OnParametersSet()
+        protected override async void OnParametersSet()
         {
-            _userViewModel = BusinessLayer.GetUser(UserId);
-            _postViewModelList = BusinessLayer.GetUserPosts(UserId);
+            _userViewModel = await BusinessLayer.GetUser(UserId);
+            _postViewModelList = await BusinessLayer.GetUserPosts(UserId);
             IsLoading = false;
             StateHasChanged();
         }

@@ -1,74 +1,95 @@
 ﻿using Zephyr.Data.ViewModels;
-using Zephyr.Client;
 
 namespace Zephyr.Data;
 
 public class BusinessLayer : IBusinessLayer
 {
-    private Client.Client? Client { get; set; } = new("127.0.0.1:8000", new HttpClient());
+    private Client.Client Client { get; set; } = new("127.0.0.1:8000", new HttpClient());
 
-    public UserViewModel? GetUser(Guid userId)
+    public async Task<UserViewModel?> GetUser(Guid userId)
     {
-        throw new NotImplementedException();
+        var response = await Client.UserGetAsync(userId);
+        return response?.ConvertTo();
     }
 
-    public UserViewModel? CreateUser(UserViewModel newUser)
+    public async Task<UserViewModel?> CreateUser(UserViewModel newUser)
     {
-        throw new NotImplementedException();
+        var response = await Client.UserPostAsync(newUser.ConvertToUserBioModel());
+        return response?.ConvertTo();
     }
 
-    public UserViewModel? UpdateUser(UserViewModel user)
+    public async Task<UserViewModel?> UpdateUser(UserViewModel user)
     {
-        throw new NotImplementedException();
+        var response = await Client.UserPutAsync(user.ConvertToUserUpdateModel());
+        return response?.ConvertTo();
     }
 
-    public UserViewModel? DeleteUser(Guid userId)
+    public async Task<bool> DeleteUser(Guid userId)
     {
-        throw new NotImplementedException();
+        var response = await Client.UserDeleteAsync(userId);
+        return response;
     }
 
-    public UserViewModel? LoginUser(string username, string password)
+    public async Task<UserViewModel?> LoginUser(UserViewModel user)
     {
-        throw new NotImplementedException();
+        var response = await Client.UserLoginAsync(user.ConvertToUserModel());
+        return response.Success ? response.ConvertTo() : null;
     }
 
-    public List<UserViewModel?> GetAllUser()
+    public async Task<List<UserViewModel?>> GetAllUser()
     {
-        throw new NotImplementedException();
+        var response = await Client.UsersAsync();
+        var res = new List<UserViewModel?>();
+        if (response is { Count: > 0 }) 
+            res.AddRange(response.Select(userResponse => userResponse.ConvertTo()));
+        return res;
     }
 
-    public PostViewModel? AddPost(PostViewModel post)
+    public async Task<PostViewModel?> AddPost(PostViewModel post)
     {
-        throw new NotImplementedException();
+        var response = await Client.PostPostAsync(post.ConvertToPostCreateModel());
+        return response.ConvertTo();
     }
 
-    public PostViewModel? UpdatePost(PostViewModel post)
+    public async Task<PostViewModel?> UpdatePost(PostViewModel post)
     {
-        throw new NotImplementedException();
+        var response = await Client.PostPutAsync(post.ConvertToPostModel());
+        return response.ConvertTo();
     }
 
-    public PostViewModel? GetPost(Guid postId)
+    public async Task<PostViewModel?> GetPost(Guid postId)
     {
-        throw new NotImplementedException();
+        var response = await Client.PostGetAsync(postId);
+        return response.ConvertTo();
     }
 
-    public void RemovePost(Guid postId)
+    public async Task<bool> RemovePost(Guid postId)
     {
-        throw new NotImplementedException();
+        var response = await Client.PostDeleteAsync(postId);
+        return response;
     }
 
-    public List<PostViewModel> GetAllPosts()
+    public async Task<List<PostViewModel?>> GetAllPosts()
     {
-        throw new NotImplementedException();
+        var response = await Client.PostsAsync();
+        var res = new List<PostViewModel?>();
+        if (response is { Count: > 0 })
+            res.AddRange(response.Select(userResponse => userResponse.ConvertTo()));
+        return res;
     }
 
-    public List<PostViewModel> GetUserPosts(Guid userId)
+    public async Task<List<PostViewModel?>> GetUserPosts(Guid userId)
     {
-        throw new NotImplementedException();
+        var response = await Client.PostsUserAsync(userId);
+        var res = new List<PostViewModel?>();
+        if (response is { Count: > 0 })
+            res.AddRange(response.Select(userResponse => userResponse.ConvertTo()));
+        return res;
     }
 
-    public PostViewModel? GetNewestPost()
+    public async Task<PostViewModel?> GetNewestPost()
     {
-        throw new NotImplementedException();
+        var response = await Client.PostNewestAsync();
+        return response.ConvertTo();
     }
 }
