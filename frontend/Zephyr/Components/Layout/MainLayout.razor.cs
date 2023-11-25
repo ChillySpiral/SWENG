@@ -33,18 +33,23 @@ namespace Zephyr.Components.Layout
                 var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
                 if (user != null)
                 {
-                    UserName = user.Name;
-                    UserPath = $"profile/{user.Id}";
-                    UserLoggedIn = true;
-                    StateHasChanged();
+                    await InvokeAsync(() => {
+                        UserName = user.Name;
+                        UserPath = $"profile/{user.Id}";
+                        UserLoggedIn = true;
+                        StateHasChanged();
+                    });
                 }
             }
             else
             {
-                UserLoggedIn = false;
-                UserName = null;
-                UserPath = null;
-                StateHasChanged();
+                await InvokeAsync(() =>
+                {
+                    UserLoggedIn = false;
+                    UserName = null;
+                    UserPath = null;
+                    StateHasChanged();
+                });
             }
         }
 
