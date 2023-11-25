@@ -16,6 +16,9 @@ namespace Zephyr.Components.Controls.UserManagement
         [Inject]
         public required IBusinessLayer BusinessLayer { get; set; }
 
+        [Inject]
+        public required NotificationService Notification { get; set; }
+
         public UserViewModel User { get; set; }
 
         public async void OnRegister(LoginArgs regArgs)
@@ -30,8 +33,17 @@ namespace Zephyr.Components.Controls.UserManagement
             {
                 await OnLoggedIn.InvokeAsync(res);
             }
-
-            //ToDo: Else Validation Message
+            else
+            {
+                var message = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Registration failed:",
+                    Detail = "Invalid credentials",
+                    Duration = 7000
+                };
+                Notification.Notify(message);
+            }
         }
 
         public void OnLoginClick()

@@ -14,6 +14,7 @@ builder.Services.AddRadzenComponents();
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddSingleton<IEventService, EventService>();
 builder.Services.AddSingleton<IBusinessLayer, BusinessLayer>();
+builder.Services.AddScoped<NotificationService>();
 
 builder.Services.AddServerSideBlazor().AddHubOptions(o =>
 {

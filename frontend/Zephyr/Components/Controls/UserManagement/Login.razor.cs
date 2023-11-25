@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Radzen;
+using Radzen.Blazor.Rendering;
 using Zephyr.Data;
 using Zephyr.Data.ViewModels;
 
@@ -14,7 +15,11 @@ namespace Zephyr.Components.Controls.UserManagement
         public EventCallback<UserViewModel> OnLoggedIn { get; set; }
 
         [Inject]
-        public required IBusinessLayer BusinessLayer { get; set; }
+        public required IBusinessLayer BusinessLayer { get; set; }        
+        
+        [Inject]
+        public required NotificationService Notification { get; set; }
+
 
         public void OnRegisterClick()
         {
@@ -33,8 +38,17 @@ namespace Zephyr.Components.Controls.UserManagement
             {
                 await OnLoggedIn.InvokeAsync(res);
             }
-
-            //ToDo Else Validation Message
+            else
+            {
+                var message = new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Error,
+                    Summary = "Login failed:", 
+                    Detail = "Invalid credentials", 
+                    Duration = 7000
+                };
+                Notification.Notify(message);
+            }
         }
     }
 }
