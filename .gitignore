@@ -165,3 +165,8 @@ cython_debug/
 .idea/inspectionProfiles/profiles_settings.xml
 .idea/inspectionProfiles/Project_Default.xml
 .idea/SWENG.iml
+/frontend/Zephyr/obj
+/frontend/Zephyr/.vs/Zephyr
+/frontend/Zephyr/bin/Debug/net8.0
+/frontend/Zephyr/.vs/ProjectEvaluation
+/frontend/Zephyr/bin/Release/net8.0
