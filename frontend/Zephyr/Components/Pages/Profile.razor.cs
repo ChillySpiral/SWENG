@@ -7,11 +7,22 @@ namespace Zephyr.Components.Pages
     public partial class Profile
     {
         [Parameter]
-        public Guid UserId { get; set; }
+        public string UserId
+        {
+            get => _userId.ToString();
+            set
+            {
+                if (Guid.TryParse(value, out _userId))
+                {
+
+                }
+            }
+        }
 
         [Inject]
         public IBusinessLayer BusinessLayer { get; set; }
 
+        private Guid _userId;
         private List<PostViewModel?> _postViewModelList = new();
         private UserViewModel? _userViewModel;
 
@@ -21,8 +32,8 @@ namespace Zephyr.Components.Pages
 
         protected override async void OnParametersSet()
         {
-            _userViewModel = await BusinessLayer.GetUser(UserId);
-            _postViewModelList = await BusinessLayer.GetUserPosts(UserId);
+            _userViewModel = await BusinessLayer.GetUser(_userId);
+            _postViewModelList = await BusinessLayer.GetUserPosts(_userId);
             IsLoading = false;
             StateHasChanged();
         }
