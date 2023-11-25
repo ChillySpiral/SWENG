@@ -62,7 +62,7 @@ class RestAPI:
         return db_access.update_post(post)
 
     @staticmethod
-    @app.delete("/post/{user_id}", tags=["Posts"])
+    @app.delete("/post/{post_id}", tags=["Posts"])
     async def delete_post(post_id: UUID) -> bool:
         return db_access.delete_post(post_id)
 
