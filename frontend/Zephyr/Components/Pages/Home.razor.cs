@@ -14,6 +14,7 @@ namespace Zephyr.Components.Pages
         protected override async void OnInitialized()
         {
             _postViewModelList = await BusinessLayer.GetAllPosts();
+            StateHasChanged();
         }
 
         private async void OnPosted()

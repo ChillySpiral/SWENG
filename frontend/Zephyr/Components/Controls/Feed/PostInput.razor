@@ -1,4 +1,4 @@
-﻿<RadzenCard Style="padding-bottom: 50px;">
+﻿<RadzenCard Style="padding-bottom: 50px;" Visible="@UserLoggedIn">
     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Let the world know...</RadzenText>
     <RadzenTextArea Style="max-height: 400px; min-height: 150px;" MaxLength=256 @bind-Value="@Text" class="w-100" />
     <RadzenFileInput @bind-Value=@ImageUrl TValue="string" class="w-100"/>
