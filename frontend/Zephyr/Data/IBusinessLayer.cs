@@ -22,7 +22,7 @@ namespace Zephyr.Data
         public Task<PostViewModel?> GetPost(Guid postId);
         public Task<bool> RemovePost(Guid postId);
         public Task<List<PostViewModel?>> GetAllPosts();
-        public Task<List<PostViewModel?>> GetUserPosts(Guid userId);
+        public Task<List<PostViewModel?>> GetUserPosts(UserViewModel user);
         public Task<PostViewModel?> GetNewestPost();
 
         #endregion

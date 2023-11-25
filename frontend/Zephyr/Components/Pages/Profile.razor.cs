@@ -32,8 +32,12 @@ namespace Zephyr.Components.Pages
 
         protected override async void OnParametersSet()
         {
-            _userViewModel = await BusinessLayer.GetUser(_userId);
-            _postViewModelList = await BusinessLayer.GetUserPosts(_userId);
+            _userViewModel = await BusinessLayer.GetUser(_userId) ?? new UserViewModel()
+            {
+                Id = _userId,
+            };
+            var userPosts = await BusinessLayer.GetUserPosts(_userViewModel);
+            _postViewModelList = userPosts.OrderByDescending(x => x?.DateCreated).ToList();
             IsLoading = false;
             StateHasChanged();
         }

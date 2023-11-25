@@ -92,12 +92,17 @@ public class BusinessLayer : IBusinessLayer
         return res;
     }
 
-    public async Task<List<PostViewModel?>> GetUserPosts(Guid userId)
+    public async Task<List<PostViewModel?>> GetUserPosts(UserViewModel user)
     {
-        var response = await Client.PostsUserAsync(userId);
+        var response = await Client.PostsUserAsync(user.Id);
         var res = new List<PostViewModel?>();
         if (response is { Count: > 0 })
             res.AddRange(response.Select(userResponse => userResponse.ConvertTo()));
+        res.ForEach(x =>
+        {
+            if (x != null) 
+                x.User = user;
+        });
         return res;
     }
 
