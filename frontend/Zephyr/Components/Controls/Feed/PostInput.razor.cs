@@ -1,5 +1,6 @@
 ﻿using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Zephyr.Data;
 using Zephyr.Data.ViewModels;
 using Zephyr.Services;
@@ -36,76 +37,98 @@ namespace Zephyr.Components.Controls.Feed
 
         public async void OnUserLogInChange(object? sender, bool isLoggedIn)
         {
-            if (isLoggedIn)
+            try
             {
-                var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
-                if (user != null)
+                if (isLoggedIn)
                 {
-                    await InvokeAsync(() =>
+                    var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
+                    if (user != null)
                     {
-                        UserId = user.Id;
-                        UserLoggedIn = true;
-                        StateHasChanged();
-                    });
+                        await InvokeAsync(() =>
+                        {
+                            UserId = user.Id;
+                            UserLoggedIn = true;
+                            StateHasChanged();
+                        });
+                    }
+                    else
+                    {
+                        UserId = null;
+                    }
                 }
                 else
                 {
-                    UserId = null;
+                    await InvokeAsync(() =>
+                    {
+                        UserId = null;
+                        UserLoggedIn = false;
+                        StateHasChanged();
+                    });
                 }
             }
-            else
+            catch (JSDisconnectedException ex)
             {
-                await InvokeAsync(() =>
-                {
-                    UserId = null;
-                    UserLoggedIn = false;
-                    StateHasChanged();
-                });
+                // Ignore
             }
         }
 
         private async void CheckIfLoggedIn()
         {
-            var userSessionActive = await SessionStorageService.ContainKeyAsync("user");
-            if (!UserLoggedIn && userSessionActive)
+            try
             {
-                var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
-                if (user != null)
+                var userSessionActive = await SessionStorageService.ContainKeyAsync("user");
+                if (!UserLoggedIn && userSessionActive)
                 {
-                    UserId = user.Id;
-                    UserLoggedIn = true;
+                    var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
+                    if (user != null)
+                    {
+                        UserId = user.Id;
+                        UserLoggedIn = true;
+                        StateHasChanged();
+                    }
+                }
+                else if (UserLoggedIn && !userSessionActive)
+                {
+                    UserId = null;
+                    UserLoggedIn = false;
                     StateHasChanged();
                 }
             }
-            else if (UserLoggedIn && !userSessionActive)
+            catch (JSDisconnectedException ex)
             {
-                UserId = null;
-                UserLoggedIn = false;
-                StateHasChanged();
+                // Ignore
             }
+
         }
 
         private async void OnPost()
         {
-            if (!UserLoggedIn || UserId == null)
-                return;
-
-            var newPost = new PostViewModel()
+            try
             {
-                User = new UserViewModel()
+                if (!UserLoggedIn || UserId == null)
+                    return;
+
+                var newPost = new PostViewModel()
                 {
-                    Id = UserId.Value,
-                },
-                ImageUrl = ImageUrl ?? string.Empty,
-                Text = Text
-            };
+                    User = new UserViewModel()
+                    {
+                        Id = UserId.Value,
+                    },
+                    ImageUrl = ImageUrl ?? string.Empty,
+                    Text = Text
+                };
 
-            await BusinessLayer.AddPost(newPost);
-            await OnPosted.InvokeAsync();
+                await BusinessLayer.AddPost(newPost);
+                await OnPosted.InvokeAsync();
 
-            ImageUrl = null;
-            Text = "";
-            StateHasChanged();
+                ImageUrl = null;
+                Text = "";
+                StateHasChanged();
+            }
+            catch (JSDisconnectedException ex)
+            {
+                // Ignore
+            }
         }
 
     }
