@@ -1,8 +1,8 @@
 name: Publish Zephyr UI Docker Image
 
 on:
-  push:
-      branches: [ "feature/docker" ]
+  release:
+    types: [published]
 
 jobs:
   push_to_registry:
@@ -29,7 +29,5 @@ jobs:
         with:
           context: ./frontend/Zephyr
           push: true
-          tags: |
-            - ${{ steps.meta.outputs.tags }}
-            - latest
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
