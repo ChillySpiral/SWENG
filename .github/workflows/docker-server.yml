@@ -1,4 +1,4 @@
-name: Publish Zephyr UI Docker Image
+name: Publish Zephyr Server Docker Image
 
 on:
   push:
