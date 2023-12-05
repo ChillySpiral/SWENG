@@ -8,17 +8,6 @@ from sqlalchemy import create_engine, URL
 from dotenv import load_dotenv
 
 
-load_dotenv()
-database_url_object = URL.create(
-    "postgresql",
-    username=os.getenv("DB_USERNAME"),
-    password=os.getenv("DB_PASSWORD"),  # plain (unescaped) text
-    host="localhost",
-    port=5432,
-    database=os.getenv("DB_NAME"),
-)
-
-engine = create_engine(database_url_object)
 
 # Temporary database using typed lists to represent tables
 class DBTemp:

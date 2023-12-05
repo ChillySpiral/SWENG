@@ -1,3 +1,4 @@
+import uuid
 from typing import List
 from uuid import UUID
 from sqlalchemy import String, ForeignKey, DateTime
@@ -10,8 +11,7 @@ class Base(DeclarativeBase):
 
 class User(Base):
     __tablename__ = "user"
-    #__table_args__ = {'schema': 'test'}
-    user_id: Mapped[UUID] = mapped_column(primary_key=True)
+    user_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid.uuid1)
     username: Mapped[str] = mapped_column(String())
     password: Mapped[str] = mapped_column(String())
     bio: Mapped[str] = mapped_column(String(), default="")
@@ -20,7 +20,6 @@ class User(Base):
 
 class Post(Base):
     __tablename__ = "post"
-    #__table_args__ = {'schema': 'test'}
     post_id: Mapped[UUID] = mapped_column(primary_key=True)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("user.user_id"))
     text: Mapped[str] = mapped_column(String())
