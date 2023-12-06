@@ -20,7 +20,7 @@ class User(Base):
 
 class Post(Base):
     __tablename__ = "post"
-    post_id: Mapped[UUID] = mapped_column(primary_key=True)
+    post_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid.uuid1)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("user.user_id"))
     text: Mapped[str] = mapped_column(String())
     image: Mapped[str] = mapped_column(String())
