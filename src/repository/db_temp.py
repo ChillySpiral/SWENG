@@ -1,12 +1,8 @@
 import uuid
-import os
 from uuid import UUID
 from datetime import datetime
 from src.entity.user_dto import UserDTO
 from src.entity.post_dto import PostDTO
-from sqlalchemy import create_engine, URL
-from dotenv import load_dotenv
-
 
 
 # Temporary database using typed lists to represent tables
