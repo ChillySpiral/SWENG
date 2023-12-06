@@ -1,11 +1,13 @@
 from uuid import UUID
 from datetime import datetime
+
+from src.repository.db_repository import Repository
 from src.repository.db_temp import DBTemp
 from src.model.post_model import PostResponse, PostModel, PostCreateModel
 from src.model.user_model import UserModel, UserResponse, UserLoginResponse, UserUpdateModel, UserBioModel
 
 # Set up and initialize database here
-db = DBTemp()
+db = Repository()
 
 
 # ToDo: retain function names, but replace implementation with code that queries and filters an actual database

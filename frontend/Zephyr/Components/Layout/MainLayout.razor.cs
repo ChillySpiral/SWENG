@@ -29,29 +29,23 @@ namespace Zephyr.Components.Layout
 
         public async void OnUserLogInChange(object? sender, bool isLoggedIn)
         {
-            if (isLoggedIn)
+            try
             {
-                var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
-                if (user != null)
+                if (isLoggedIn)
                 {
-                    try
+                    var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
+                    if (user != null)
                     {
-                        await InvokeAsync(() => {
+                        await InvokeAsync(() =>
+                        {
                             UserName = user.Name;
                             UserPath = $"profile/{user.Id}";
                             UserLoggedIn = true;
                             StateHasChanged();
                         });
                     }
-                    catch (JSDisconnectedException ex)
-                    {
-                        // Ignore
-                    }
                 }
-            }
-            else
-            {
-                try
+                else
                 {
                     await InvokeAsync(() =>
                     {
@@ -61,10 +55,10 @@ namespace Zephyr.Components.Layout
                         StateHasChanged();
                     });
                 }
-                catch (JSDisconnectedException ex)
-                {
-                    // Ignore
-                }
+            }
+            catch (JSDisconnectedException ex)
+            {
+                // Ignore
             }
         }
 

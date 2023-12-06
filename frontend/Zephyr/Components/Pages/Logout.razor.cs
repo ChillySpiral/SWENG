@@ -1,5 +1,6 @@
 ﻿using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Zephyr.Services;
 
 namespace Zephyr.Components.Pages
@@ -18,11 +19,18 @@ namespace Zephyr.Components.Pages
 
         protected override async void OnInitialized()
         {
-            if (await SessionStorageService.ContainKeyAsync("user"))
+            try
             {
-                await SessionStorageService.RemoveItemAsync("user");
-                EventService.RaiseLoginEvent(false);
-                Navigation.NavigateTo("/");
+                if (await SessionStorageService.ContainKeyAsync("user"))
+                {
+                    await SessionStorageService.RemoveItemAsync("user");
+                    EventService.RaiseLoginEvent(false);
+                    Navigation.NavigateTo("/");
+                }
+            }
+            catch (JSDisconnectedException e)
+            {
+                //Ignore
             }
         }
     }

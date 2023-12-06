@@ -1,5 +1,6 @@
 ﻿using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Zephyr.Data.ViewModels;
 using Zephyr.Services;
 
@@ -21,10 +22,17 @@ namespace Zephyr.Components.Pages
 
         protected override async void OnParametersSet()
         {
-            if (await SessionStorageService.ContainKeyAsync("user"))
+            try
             {
-                UserLoggedIn = true;
-                StateHasChanged();
+                if (await SessionStorageService.ContainKeyAsync("user"))
+                {
+                    UserLoggedIn = true;
+                    StateHasChanged();
+                }
+            }
+            catch (JSDisconnectedException e)
+            {
+                //Ignore
             }
         }
 
@@ -48,10 +56,17 @@ namespace Zephyr.Components.Pages
 
         public async void OnUserLoggedIn(UserViewModel loggedUser)
         {
-            await SessionStorageService.SetItemAsync("user", loggedUser);
-            EventService.RaiseLoginEvent(true);
-            UserLoggedIn = true;
-            Navigation.NavigateTo("/");
+            try
+            {
+                await SessionStorageService.SetItemAsync("user", loggedUser);
+                EventService.RaiseLoginEvent(true);
+                UserLoggedIn = true;
+                Navigation.NavigateTo("/");
+            }
+            catch (JSDisconnectedException e)
+            {
+                //Ignore
+            }
         }
     }
 }

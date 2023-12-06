@@ -1,6 +1,12 @@
 # SWENG
 Social Media Application
 
+## Docker Compose
+Run the whole project from one code line (from ./):
+```bash
+docker compose up -d
+```
+
 ## Swagger
 OpenApi Specification can be found under (localhost_running_address)/docs
 
