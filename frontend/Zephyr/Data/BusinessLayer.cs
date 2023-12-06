@@ -4,41 +4,49 @@ namespace Zephyr.Data;
 
 public class BusinessLayer : IBusinessLayer
 {
-    private Client.Client Client { get; set; } = new("http://127.0.0.1:8000", new HttpClient());
+    private Client.Client ServerClient { get; set; } 
+    private readonly IConfiguration _config;
+
+    public BusinessLayer(IConfiguration config)
+    {
+        _config = config;
+        var baseUrl = _config.GetValue<string>("Connection:Server");
+        ServerClient = new Client.Client(baseUrl, new HttpClient());
+    }
 
     public async Task<UserViewModel?> GetUser(Guid userId)
     {
-        var response = await Client.UserGetAsync(userId);
+        var response = await ServerClient.UserGetAsync(userId);
         return response?.ConvertTo();
     }
 
     public async Task<UserViewModel?> CreateUser(UserViewModel newUser)
     {
-        var response = await Client.UserPostAsync(newUser.ConvertToUserBioModel());
+        var response = await ServerClient.UserPostAsync(newUser.ConvertToUserBioModel());
         return response?.ConvertTo();
     }
 
     public async Task<UserViewModel?> UpdateUser(UserViewModel user)
     {
-        var response = await Client.UserPutAsync(user.ConvertToUserUpdateModel());
+        var response = await ServerClient.UserPutAsync(user.ConvertToUserUpdateModel());
         return response?.ConvertTo();
     }
 
     public async Task<bool> DeleteUser(Guid userId)
     {
-        var response = await Client.UserDeleteAsync(userId);
+        var response = await ServerClient.UserDeleteAsync(userId);
         return response;
     }
 
     public async Task<UserViewModel?> LoginUser(UserViewModel user)
     {
-        var response = await Client.UserLoginAsync(user.ConvertToUserModel());
+        var response = await ServerClient.UserLoginAsync(user.ConvertToUserModel());
         return response.Success ? response.ConvertTo() : null;
     }
 
     public async Task<List<UserViewModel?>> GetAllUser()
     {
-        var response = await Client.UsersAsync();
+        var response = await ServerClient.UsersAsync();
         var res = new List<UserViewModel?>();
         if (response is { Count: > 0 }) 
             res.AddRange(response.Select(userResponse => userResponse.ConvertTo()));
@@ -47,31 +55,31 @@ public class BusinessLayer : IBusinessLayer
 
     public async Task<PostViewModel?> AddPost(PostViewModel post)
     {
-        var response = await Client.PostPostAsync(post.ConvertToPostCreateModel());
+        var response = await ServerClient.PostPostAsync(post.ConvertToPostCreateModel());
         return response.ConvertTo();
     }
 
     public async Task<PostViewModel?> UpdatePost(PostViewModel post)
     {
-        var response = await Client.PostPutAsync(post.ConvertToPostModel());
+        var response = await ServerClient.PostPutAsync(post.ConvertToPostModel());
         return response.ConvertTo();
     }
 
     public async Task<PostViewModel?> GetPost(Guid postId)
     {
-        var response = await Client.PostGetAsync(postId);
+        var response = await ServerClient.PostGetAsync(postId);
         return response.ConvertTo();
     }
 
     public async Task<bool> RemovePost(Guid postId)
     {
-        var response = await Client.PostDeleteAsync(postId);
+        var response = await ServerClient.PostDeleteAsync(postId);
         return response;
     }
 
     public async Task<List<PostViewModel?>> GetAllPosts()
     {
-        var response = await Client.PostsAsync();
+        var response = await ServerClient.PostsAsync();
         var res = new List<PostViewModel?>();
         if (response is { Count: > 0 })
             res.AddRange(response.Select(userResponse => userResponse.ConvertTo()));
@@ -94,7 +102,7 @@ public class BusinessLayer : IBusinessLayer
 
     public async Task<List<PostViewModel?>> GetUserPosts(UserViewModel user)
     {
-        var response = await Client.PostsUserAsync(user.Id);
+        var response = await ServerClient.PostsUserAsync(user.Id);
         var res = new List<PostViewModel?>();
         if (response is { Count: > 0 })
             res.AddRange(response.Select(userResponse => userResponse.ConvertTo()));
@@ -108,7 +116,7 @@ public class BusinessLayer : IBusinessLayer
 
     public async Task<PostViewModel?> GetNewestPost()
     {
-        var response = await Client.PostNewestAsync();
+        var response = await ServerClient.PostNewestAsync();
         return response.ConvertTo();
     }
 }
