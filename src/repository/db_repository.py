@@ -33,7 +33,7 @@ class Repository:
             "postgresql",
             username=os.getenv("DB_USERNAME"),
             password=os.getenv("DB_PASSWORD"),
-            host="localhost",
+            host=os.getenv("DB_HOST"),
             port=5432,
             database=os.getenv("DB_NAME"),
         )

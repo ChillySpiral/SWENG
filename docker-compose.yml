@@ -6,6 +6,7 @@ services:
     image: postgres:15.4-alpine
     networks:
       - db
+      - server
     volumes:
       - ./todo.sql:/docker-entrypoint-initdb.d/schema.sql
     env_file:
@@ -24,16 +25,39 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    restart: always
+    restart: 'always'
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@admin.com
       PGADMIN_DEFAULT_PASSWORD: root
     ports:
-      - 5050:80
+      - "5050:9777"
     depends_on:
       - postgres
     networks:
       - db
 
+  server:
+    restart: 'always'
+    image: ai23m046/zephyr_server
+    networks:
+      - server
+      - ui
+    ports:
+      - "8080:80"
+    links:
+      - "postgres:database"
+
+  frontend:
+    restart: 'always'
+    image: ai23m046/zephyr_ui
+    networks:
+      - ui
+    ports:
+      - "8088:8080"
+    links:
+      - "server:api"
+
 networks:
   db:
+  server:
+  ui:
