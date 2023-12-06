@@ -1,5 +1,6 @@
 ﻿using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Zephyr.Data.ViewModels;
 using Zephyr.Services;
 
@@ -33,47 +34,69 @@ namespace Zephyr.Components.Layout
                 var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
                 if (user != null)
                 {
-                    await InvokeAsync(() => {
-                        UserName = user.Name;
-                        UserPath = $"profile/{user.Id}";
-                        UserLoggedIn = true;
-                        StateHasChanged();
-                    });
+                    try
+                    {
+                        await InvokeAsync(() => {
+                            UserName = user.Name;
+                            UserPath = $"profile/{user.Id}";
+                            UserLoggedIn = true;
+                            StateHasChanged();
+                        });
+                    }
+                    catch (JSDisconnectedException ex)
+                    {
+                        // Ignore
+                    }
                 }
             }
             else
             {
-                await InvokeAsync(() =>
+                try
                 {
-                    UserLoggedIn = false;
-                    UserName = null;
-                    UserPath = null;
-                    StateHasChanged();
-                });
+                    await InvokeAsync(() =>
+                    {
+                        UserLoggedIn = false;
+                        UserName = null;
+                        UserPath = null;
+                        StateHasChanged();
+                    });
+                }
+                catch (JSDisconnectedException ex)
+                {
+                    // Ignore
+                }
             }
         }
 
         private async void CheckIfLoggedIn()
         {
-            var userSessionActive = await SessionStorageService.ContainKeyAsync("user");
-            if (!UserLoggedIn && userSessionActive)
+            try
             {
-                var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
-                if (user != null)
+                var userSessionActive = await SessionStorageService.ContainKeyAsync("user");
+                if (!UserLoggedIn && userSessionActive)
                 {
-                    UserName = user.Name;
-                    UserPath = $"profile/{user.Id}";
-                    UserLoggedIn = true;
+                    var user = await SessionStorageService.GetItemAsync<UserViewModel>("user");
+                    if (user != null)
+                    {
+                        UserName = user.Name;
+                        UserPath = $"profile/{user.Id}";
+                        UserLoggedIn = true;
+                        StateHasChanged();
+                    }
+                }
+                else if (UserLoggedIn && !userSessionActive)
+                {
+                    UserLoggedIn = false;
+                    UserName = null;
+                    UserPath = null;
                     StateHasChanged();
                 }
             }
-            else if (UserLoggedIn && !userSessionActive)
+            catch (JSDisconnectedException ex)
             {
-                UserLoggedIn = false;
-                UserName = null;
-                UserPath = null;
-                StateHasChanged();
+                // Ignore
             }
+
         }
 
         private void ToggleSidebar()
