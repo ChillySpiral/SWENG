@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    restart: 'always'
+    image: postgres:15.4-alpine
+    networks:
+      - db
+    volumes:
+      - ./todo.sql:/docker-entrypoint-initdb.d/schema.sql
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      timeout: 2s
+      interval: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - 5050:80
+    depends_on:
+      - postgres
+    networks:
+      - db
+
+networks:
+  db:
