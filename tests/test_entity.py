@@ -1,67 +1,73 @@
-import uuid
-
 import pytest
-
 from src.entity.user_dto import UserDTO
 from src.entity.post_dto import PostDTO
+from src.entity.entities import Base, User, Post
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from uuid import UUID
 from datetime import datetime
 
 
-@pytest.fixture()
-def user_dto_default():
-    return UserDTO()
+def test_user_dto():
+    user_data = {"user_id": UUID("123e4567-e89b-12d3-a456-426614174001"), "username": "john_doe", "password": "secret", "bio": "Hello, I'm John."}
+    user_dto = UserDTO(**user_data)
+    assert user_dto.user_id == UUID("123e4567-e89b-12d3-a456-426614174001")
+    assert user_dto.username == "john_doe"
+    assert user_dto.password == "secret"
+    assert user_dto.bio == "Hello, I'm John."
 
 
-@pytest.fixture()
-def post_dto_default():
-    return PostDTO()
+def test_post_dto():
+    post_data = {"post_id": UUID("123e4567-e89b-12d3-a456-426614174001"), "user_id": UUID("123e4567-e89b-12d3-a456-426614174002"),
+                 "text": "This is a post", "image": "somebase64", "posted": datetime(2023, 1, 1, 12, 0, 0)}
+    post_dto = PostDTO(**post_data)
+    assert post_dto.post_id == UUID("123e4567-e89b-12d3-a456-426614174001")
+    assert post_dto.user_id == UUID("123e4567-e89b-12d3-a456-426614174002")
+    assert post_dto.text == "This is a post"
+    assert post_dto.image == "somebase64"
+    assert post_dto.posted == datetime(2023, 1, 1, 12, 0, 0)
 
 
-def test_UserDTO_set_id():
-    test_id: UUID = uuid.uuid4()
-    user_dto_default.Id = test_id
-
-    assert user_dto_default.Id == test_id
-
-
-def test_UserDTO_set_username():
-    test_string: str = "test"
-    user_dto_default.Username = test_string
-
-    assert user_dto_default.Username == test_string
+@pytest.fixture
+def database():
+    engine = create_engine("sqlite:///:memory:")
+    Base.metadata.create_all(engine)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    yield session
+    session.close()
 
 
-def test_UserDTO_set_password():
-    test_string: str = "test"
-    user_dto_default.Password = test_string
+def test_user_model(database):
+    user_data = {"username": "john_doe", "password": "secret", "bio": "Hello, I'm John."}
+    user = User(**user_data)
 
-    assert user_dto_default.Password == test_string
+    database.add(user)
+    database.commit()
 
-
-def test_PostDTO_set_id():
-    test_id: UUID = uuid.uuid4()
-    post_dto_default.Id = test_id
-
-    assert post_dto_default.Id == test_id
-
-
-def test_PostDTO_set_user_id():
-    test_id: UUID = uuid.uuid4()
-    post_dto_default.user_id = test_id
-
-    assert post_dto_default.user_id == test_id
+    assert user.user_id is not None
+    assert user.username == "john_doe"
+    assert user.password == "secret"
+    assert user.bio == "Hello, I'm John."
+    assert user.posts == []
 
 
-def test_PostDTO_set_text():
-    test_string: str = "test"
-    post_dto_default.text = test_string
+def test_post_model(database):
+    user_data = {"username": "john_doe", "password": "secret", "bio": "Hello, I'm John."}
+    user = User(**user_data)
+    database.add(user)
+    database.commit()
 
-    assert post_dto_default.text == test_string
+    post_data = {"user_id": user.user_id, "text": "This is a post", "image": "post_image.jpg",
+                 "posted": datetime.utcnow()}
+    post = Post(**post_data)
 
+    user.posts.append(post)
+    database.commit()
 
-def test_PostDTO_set_image():
-    test_string: str = "test"
-    post_dto_default.image = test_string
-
-    assert post_dto_default.image == test_string
+    assert post.post_id is not None
+    assert post.user_id == user.user_id
+    assert post.text == "This is a post"
+    assert post.image == "post_image.jpg"
+    assert post.posted is not None
+    assert post.user == user
