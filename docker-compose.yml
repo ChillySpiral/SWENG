@@ -58,6 +58,22 @@ services:
     networks:
       - kafka
 
+  create-topics:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      - kafka
+    command:
+      - bash
+      - -c
+      - |
+        echo Waiting for Kafka to be ready...
+        while ! kafka-topics --bootstrap-server kafka:9092 --list; do sleep 1; done
+        kafka-topics --create --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1 --topic sentiment_analysis
+        kafka-topics --create --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1 --topic text_generation
+    networks:
+      - kafka
+
+
   schema-registry:
     image: confluentinc/cp-schema-registry:latest
     container_name: schema-registry
