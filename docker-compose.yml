@@ -39,6 +39,8 @@ services:
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: zookeeper
+    volumes:
+      - zookeeper:/data
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     networks:
@@ -47,6 +49,8 @@ services:
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
+    volumes:
+      - kafka:/data
     depends_on:
       - zookeeper
     ports:
@@ -57,22 +61,6 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - kafka
-
-  create-topics:
-    image: confluentinc/cp-kafka:latest
-    depends_on:
-      - kafka
-    command:
-      - bash
-      - -c
-      - |
-        echo Waiting for Kafka to be ready...
-        while ! kafka-topics --bootstrap-server kafka:9092 --list; do sleep 1; done
-        kafka-topics --create --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1 --topic sentiment_analysis
-        kafka-topics --create --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1 --topic text_generation
-    networks:
-      - kafka
-
 
   schema-registry:
     image: confluentinc/cp-schema-registry:latest
@@ -132,6 +120,17 @@ services:
       - "8088:8080"
     links:
       - "server:api"
+
+  ml_microservice:
+    build:
+      context: .
+      dockerfile: ml_microservice/Dockerfile
+    networks:
+      - kafka
+
+volumes:
+  kafka:
+  zookeeper:
 
 networks:
   db:
