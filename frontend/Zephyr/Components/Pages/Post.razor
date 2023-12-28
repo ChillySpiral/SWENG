@@ -1,5 +1,10 @@
-﻿<h3>Post</h3>
-
-@code {
-
+﻿@using Zephyr.Components.Controls.Feed
+@page "/post/{PostId}"
+@if (IsLoading)
+{
+    <p>Loading ...</p>
+}
+else
+{
+    <PostItem Data="_postViewModel" Style="width: 800px; height: 800px; margin-left:auto; margin-right:auto;"></PostItem>
 }

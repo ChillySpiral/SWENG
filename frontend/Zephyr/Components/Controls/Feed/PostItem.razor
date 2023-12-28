@@ -4,7 +4,11 @@
         <RadzenText TextStyle="TextStyle.Caption"><div class="rz-text-wrap">@Data.Text</div></RadzenText>
         @if (Data.ImageUrl != null)
         {
-            <RadzenImage Path="@Data.ImageUrl" Style="width: 400px; height: 400px; margin-left:auto; margin-right:auto;"/>
+            <RadzenImage Path="@Data.ImageUrl" Style=@Style/>
         }
     </RadzenStack>
+    @if (IsFeed)
+    {
+        <b onclick="@NavigateToPost" onmouseover="" style="cursor: pointer;"><RadzenIcon Icon="markunread_mailbox" /></b>
+    }
 </RadzenCard>
