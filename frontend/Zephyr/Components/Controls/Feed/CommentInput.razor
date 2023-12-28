@@ -1,0 +1,5 @@
+﻿<RadzenCard Style="padding-bottom: 50px;" Visible="@UserLoggedIn">
+    <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Comment...</RadzenText>
+    <RadzenTextArea Style="max-height: 400px; min-height: 150px;" MaxLength=256 @bind-Value="@Text" class="w-100" />
+    <RadzenButton Click="OnPost" Text="Posten" ButtonStyle="ButtonStyle.Primary" Style="float:right; margin-top: 10px;" />
+</RadzenCard>

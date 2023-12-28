@@ -119,4 +119,39 @@ public class BusinessLayer : IBusinessLayer
         var response = await ServerClient.PostNewestAsync();
         return response.ConvertTo();
     }
+
+
+    private List<CommentViewModel> _tempComments = new List<CommentViewModel>()
+    {
+        new CommentViewModel()
+        {
+            User = new UserViewModel()
+            {
+                Name = "User 1"
+            },
+            Text = "Test 1 Comment",
+            DateCreated = DateTimeOffset.Now
+        },
+        new CommentViewModel()
+        {
+            User = new UserViewModel()
+            {
+                Name = "User 2"
+            },
+            Text = "Test 2 Comment",
+            DateCreated = DateTimeOffset.Now
+        }
+    };
+
+    public async Task<List<CommentViewModel?>> GetPostComments(Guid postId)
+    {
+        return _tempComments;
+    }
+
+    public async Task<CommentViewModel?> AddComment(CommentViewModel comment)
+    {
+        _tempComments.Add(comment);
+        return comment;
+    }
+
 }

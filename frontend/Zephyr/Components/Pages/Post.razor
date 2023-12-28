@@ -7,4 +7,9 @@
 else
 {
     <PostItem Data="_postViewModel" Style="width: 800px; height: 800px; margin-left:auto; margin-right:auto;"></PostItem>
+    <CommentInput OnPosted="OnPosted" PostId="_postId"></CommentInput>
+    @foreach (var comment in _comments)
+    {
+        <Comment Data="comment"></Comment>
+    }
 }
