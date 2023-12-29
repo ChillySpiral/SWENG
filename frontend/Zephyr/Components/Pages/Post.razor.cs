@@ -44,7 +44,11 @@ namespace Zephyr.Components.Pages
 
             if (_postViewModel != null)
             {
-                _comments = await BusinessLayer.GetPostComments(_postViewModel.Id);
+                 var selectedComments = await BusinessLayer.GetPostComments(_postViewModel.Id);
+                 if (selectedComments != null)
+                 { 
+                     _comments = selectedComments.OrderByDescending(x => x?.DateCreated).ToList()!;
+                 }
             }
 
             IsLoading = false;
@@ -54,9 +58,18 @@ namespace Zephyr.Components.Pages
         private async void OnPosted()
         {
             var newComments = await BusinessLayer.GetPostComments(_postId);
-            var selectedComments = newComments.Where(x => x != null && x.DateCreated > _comments.First()?.DateCreated && !_comments.Contains(x)).ToList();
-            var insertComments = selectedComments.OrderByDescending(x => x?.DateCreated).ToList();
-            _comments.InsertRange(0, insertComments);
+            if (_comments.Any())
+            {
+                var selectedComments = newComments.Where(x => x != null && x.DateCreated > _comments.First()?.DateCreated && !_comments.Contains(x)).ToList();
+                var insertComments = selectedComments.OrderByDescending(x => x?.DateCreated).ToList();
+                _comments.InsertRange(0, insertComments);
+            }
+            else
+            {
+                var insertComments = newComments.OrderByDescending(x => x?.DateCreated).ToList();
+                _comments.InsertRange(0, insertComments);
+            }
+
             StateHasChanged();
         }
     }

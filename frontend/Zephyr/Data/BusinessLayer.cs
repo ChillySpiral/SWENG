@@ -120,38 +120,27 @@ public class BusinessLayer : IBusinessLayer
         return response.ConvertTo();
     }
 
-
-    private List<CommentViewModel> _tempComments = new List<CommentViewModel>()
-    {
-        new CommentViewModel()
-        {
-            User = new UserViewModel()
-            {
-                Name = "User 1"
-            },
-            Text = "Test 1 Comment",
-            DateCreated = DateTimeOffset.Now
-        },
-        new CommentViewModel()
-        {
-            User = new UserViewModel()
-            {
-                Name = "User 2"
-            },
-            Text = "Test 2 Comment",
-            DateCreated = DateTimeOffset.Now
-        }
-    };
-
     public async Task<List<CommentViewModel?>> GetPostComments(Guid postId)
     {
-        return _tempComments;
+        var response = await ServerClient.CommentGetAsync(postId);
+        var res = new List<CommentViewModel?>();
+        if (response is { Count: > 0 })
+            res.AddRange(response.Select(commentResponse => commentResponse.ConvertTo()));
+
+        foreach (var comment in res)
+        {
+            var user = await GetUser(comment.User.Id);
+            if (user != null) 
+                comment.User = user;
+        }
+
+        return res;
     }
 
     public async Task<CommentViewModel?> AddComment(CommentViewModel comment)
     {
-        _tempComments.Add(comment);
-        return comment;
+        var response = await ServerClient.CommentPostAsync(comment.ConvertToCommentCreateModel());
+        return response.ConvertTo();
     }
 
 }

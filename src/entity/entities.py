@@ -26,3 +26,12 @@ class Post(Base):
     image: Mapped[str] = mapped_column(String())
     posted: Mapped[DateTime] = mapped_column(DateTime())
     user: Mapped["User"] = relationship("User", back_populates="posts")  # 'User' is the class name
+
+
+class Comment(Base):
+    __tablename__ = "comment"
+    comment_id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid.uuid1)
+    post_id: Mapped[UUID] = mapped_column(ForeignKey("post.post_id"))
+    user_id: Mapped[UUID] = mapped_column(ForeignKey("user.user_id"))
+    text: Mapped[str] = mapped_column(String())
+    posted: Mapped[DateTime] = mapped_column(DateTime())
