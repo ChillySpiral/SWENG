@@ -1,14 +1,7 @@
-﻿<RadzenCard Variant="Variant.Filled" Style="margin-block:5px;">
+﻿
+<RadzenCard Variant="Variant.Filled" Style="margin-block:5px;">
     <RadzenStack Orientation="Orientation.Vertical" JustifyContent="JustifyContent.Center" Gap="1rem" Class="rz-p-4">
         <RadzenText TextStyle="TextStyle.Subtitle1"><b onclick="@NavigateToUser" onmouseover="" style="cursor: pointer;">@Data.User.Name</b></RadzenText>
         <RadzenText TextStyle="TextStyle.Caption"><div class="rz-text-wrap">@Data.Text</div></RadzenText>
-        @if (Data.ImageUrl != null)
-        {
-            <RadzenImage Path="@Data.ImageUrl" Style=@Style/>
-        }
     </RadzenStack>
-    @if (IsFeed)
-    {
-        <b onclick="@NavigateToPost" onmouseover="" style="cursor: pointer;"><RadzenIcon Icon="markunread_mailbox" /></b>
-    }
 </RadzenCard>
