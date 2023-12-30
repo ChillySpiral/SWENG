@@ -1,11 +1,13 @@
+import asyncio
+
 from ml_features.sentiment_analysis import SentimentAnalyser
 from ml_features.text_generation import TextGenerator
 
 
-def main():
-    SentimentAnalyser()
-    TextGenerator()
+async def main():
+    sentiment_analyser = SentimentAnalyser()
+    await sentiment_analyser.consume()
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
