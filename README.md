@@ -61,3 +61,8 @@ docker run --network="ZephyrNetwork" --name ui -p 8088:8080 ai23m046/zephyr_ui:[
 ```
 Info:
 Server name needs to be set to "api" for the connection to work
+
+## Kafka
+Kafka runs only via the docker-compose file together with zookeeper 
+### Administration
+Topics can be created and managed locally via the confluent control-center running in **port:9021**
