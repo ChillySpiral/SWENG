@@ -4,7 +4,6 @@ import socket
 import string
 import uuid
 from uuid import UUID
-
 import aiokafka
 from dotenv import load_dotenv
 from transformers import pipeline
@@ -55,4 +54,3 @@ class SentimentAnalyser:
         finally:
             await self.__consumer__.stop()
             await self.__producer__.stop()
-
