@@ -56,6 +56,3 @@ class SentimentAnalyser:
             await self.__consumer__.stop()
             await self.__producer__.stop()
 
-    def send_test_messages(self):
-        self.__producer__.start()
-        self.__producer__.send(topic=KAFKA_REQUEST_TOPIC, key=uuid.uuid4(), value="test")
