@@ -41,6 +41,8 @@ services:
     container_name: zookeeper
     volumes:
       - zookeeper:/data
+      - ~/kafka/data/zookeeper_data:/var/lib/zookeeper/data
+      - ~/kafka/data/zookeeper_log:/var/lib/zookeeper/log
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
     networks:
@@ -50,7 +52,7 @@ services:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
     volumes:
-      - kafka:/data
+      - kafka:/var/lib/kafka/data
     depends_on:
       - zookeeper
     ports:
@@ -59,6 +61,8 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      #KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
     networks:
       - kafka
 
@@ -125,6 +129,8 @@ services:
     build:
       context: .
       dockerfile: ml_microservice/Dockerfile
+    env_file:
+      - ml_microservice/.env
     networks:
       - kafka
 
@@ -137,3 +143,4 @@ networks:
   server:
   ui:
   kafka:
+    driver: bridge
