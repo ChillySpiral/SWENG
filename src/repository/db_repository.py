@@ -7,10 +7,11 @@ from sqlalchemy import URL, select, and_
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from src.entity.entities import Base, Post
+from src.entity.entities import Base, Post, Comment
 from src.entity.entities import User
 from src.entity.post_dto import PostDTO
 from src.entity.user_dto import UserDTO
+from src.entity.comment_dto import CommentDTO
 
 
 class UserNotFoundException:
@@ -136,3 +137,17 @@ class Repository:
             post_list = session.scalars(statement).all()
             post_dto_list = list(map(lambda post: PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, posted=post.posted), post_list))
             return post_dto_list
+
+    def insert_comment_to_post(self,post_id: UUID, user_id: UUID, text: str, posted: datetime) -> CommentDTO:
+        with Session(self.engine) as session:
+            comment = Comment(post_id=post_id, user_id=user_id, text=text, posted=posted)
+            session.add(comment)
+            session.commit()
+            return CommentDTO(comment_id=comment.comment_id, post_id=comment.post_id, user_id=comment.user_id, text=comment.text, posted=comment.posted)
+
+    def get_comments_by_post(self, post_id: UUID) -> list[CommentDTO]:
+        with Session(self.engine) as session:
+            statement = select(Comment).where(Comment.post_id == post_id)
+            comment_list = session.scalars(statement).all()
+            comment_dto_list = list(map(lambda comment: CommentDTO(comment_id=comment.comment_id, post_id=comment.post_id, user_id=comment.user_id, text=comment.text, posted=comment.posted), comment_list))
+            return comment_dto_list
