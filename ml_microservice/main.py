@@ -1,4 +1,5 @@
 import asyncio
+import uuid
 
 from ml_features.sentiment_analysis import SentimentAnalyser
 from ml_features.text_generation import TextGenerator

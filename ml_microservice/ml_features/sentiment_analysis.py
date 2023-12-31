@@ -33,15 +33,19 @@ class SentimentAnalyser:
             bootstrap_servers='kafka:9092'
         )
         self.__producer__ = aiokafka.AIOKafkaProducer(
-            bootstrap_servers='kafka:9092')
+            bootstrap_servers='kafka:9092', client_id=socket.gethostname())
         # self.__producer__ = Producer(producer_conf)
         # self.produce_analysis(text="I love this movie and i would watch it again and again!", uuid=uuid.uuid4())
 
     async def __produce_analysis__(self, text: string, uuid: UUID):
         result = max(self.__classifier__(text)[0], key=lambda x: x['score'])
         byte_value = json.dumps(result).encode("utf-8")
-        byte_key = json.dumps(uuid, cls=UUIDEncoder)
-        await self.__producer__.send(topic=KAFKA_RESPONSE_TOPIC, key=byte_key, value=byte_value)
+        # byte_key = json.dumps(uuid, cls=UUIDEncoder)
+        byte_key = str(uuid).encode("utf-8")
+        try:
+            await self.__producer__.send(topic=KAFKA_RESPONSE_TOPIC, key=byte_key, value=byte_value)
+        except Exception as e:
+            print(f"Error sending message: {e}")
 
     async def consume(self):
         await self.__consumer__.start()
