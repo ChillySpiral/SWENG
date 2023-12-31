@@ -98,6 +98,34 @@ namespace Zephyr.Data.ViewModels
             };
         }
 
+        public static CommentViewModel ConvertTo(this CommentResponse source)
+        {
+            return new CommentViewModel()
+            {
+                Id = source.Comment_id,
+                User = new UserViewModel()
+                {
+                    Id = source.User_id
+                },
+                Text = source.Text,
+                DateCreated = source.Posted
+            };
+        }
+
+        public static CommentViewModel ConvertTo(this CommentCreateModel source)
+        {
+            return new CommentViewModel()
+            {
+                Id = Guid.Empty,
+                PostId = source.Post_id,
+                User = new UserViewModel()
+                {
+                    Id = source.User_id
+                },
+                Text = source.Text,
+            };
+        }
+
         #endregion
 
         #region Convert From ViewModel
@@ -181,6 +209,28 @@ namespace Zephyr.Data.ViewModels
                 User_id = source.User.Id,
                 Text = source.Text,
                 Image = source.ImageUrl,
+                Posted = source.DateCreated.Value
+            };
+        }
+
+        public static CommentCreateModel ConvertToCommentCreateModel(this CommentViewModel source)
+        {
+            return new CommentCreateModel()
+            {
+                Post_id = source.PostId,
+                User_id = source.User.Id,
+                Text = source.Text,
+            };
+        }
+
+        public static CommentResponse ConvertToCommentResponse(this CommentViewModel source)
+        {
+            return new CommentResponse()
+            {
+                Comment_id = source.Id,
+                Post_id = source.Id,
+                User_id = source.User.Id,
+                Text = source.Text,
                 Posted = source.DateCreated.Value
             };
         }

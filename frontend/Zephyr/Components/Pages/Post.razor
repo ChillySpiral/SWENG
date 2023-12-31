@@ -1,5 +1,19 @@
-﻿<h3>Post</h3>
-
-@code {
-
+﻿@using Zephyr.Components.Controls.Feed
+@page "/post/{PostId}"
+@if (IsLoading)
+{
+    <p>Loading ...</p>
+}
+else
+{
+    <div Style="max-width: 800px; background-color: transparent; margin-left:auto; margin-right:auto;">
+        <PostItem Data="_postViewModel" Style="width: 600px; height: 600px; margin-left:auto; margin-right:auto;"></PostItem>
+    </div>
+    <div Style="max-width: 600px; background-color: transparent; margin-left:auto; margin-right:auto;">
+        <CommentInput OnPosted="OnPosted" PostId="_postId"></CommentInput>
+        @foreach (var comment in _comments)
+        {
+            <Comment Data="comment"></Comment>
+        }
+    </div>
 }

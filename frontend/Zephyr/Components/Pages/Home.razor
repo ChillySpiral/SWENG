@@ -6,6 +6,6 @@
     <PostInput OnPosted="OnPosted"></PostInput>
     @foreach (var post in _postViewModelList)
     {
-        <PostItem Data="post"></PostItem>
+        <PostItem Data="post" IsFeed="true"></PostItem>
     }
 </div>

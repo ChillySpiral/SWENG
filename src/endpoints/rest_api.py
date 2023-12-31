@@ -3,6 +3,8 @@ from fastapi.openapi.utils import get_openapi
 
 from uuid import UUID
 from datetime import datetime
+
+from src.model.comment_model import CommentResponse, CommentCreateModel
 from src.model.user_model import UserModel, UserUpdateModel, UserBioModel, UserResponse, UserLoginResponse
 from src.model.post_model import PostModel, PostCreateModel, PostResponse
 from src.repository.crud import CRUD
@@ -87,6 +89,16 @@ class RestAPI:
                 dt_max = post.posted
                 idx_newest = idx
         return data[idx_newest]
+
+    @staticmethod
+    @app.post("/comment", tags=["Comments"])
+    async def create_comment(comment: CommentCreateModel) -> CommentResponse:
+        return db_access.insert_comment(comment)
+
+    @staticmethod
+    @app.get("/comment/{post_id}", tags=["Comments"])
+    async def get_comments_by_post(post_id: UUID) -> list[CommentResponse]:
+        return db_access.get_comments_by_post(post_id)
 
     @staticmethod
     def generate_openapi_contract():
