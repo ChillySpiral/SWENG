@@ -1,13 +1,13 @@
 import json
+import logging
 import os
 import socket
 import string
-import uuid
 from uuid import UUID
+
 import aiokafka
 from dotenv import load_dotenv
 from transformers import pipeline
-from uuid_encoder import UUIDEncoder
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
@@ -22,11 +22,10 @@ class SentimentAnalyser:
             model=model,
             top_k=None
         )
-        producer_conf = {'bootstrap.servers': 'kafka:9092',
-                         'client.id': socket.gethostname()}
-        consumer_conf = {'bootstrap.servers': 'kafka:9092',
-                         'group.id': 'sentiment-analysis_consumer',
-                         'client.id': socket.gethostname()}
+        self.__consumer__ = None
+        self.__producer__ = None
+
+    async def initialize(self):
         self.__consumer__ = aiokafka.AIOKafkaConsumer(
             KAFKA_REQUEST_TOPIC,
             group_id='sentiment-analysis_consumer',
@@ -34,8 +33,6 @@ class SentimentAnalyser:
         )
         self.__producer__ = aiokafka.AIOKafkaProducer(
             bootstrap_servers='kafka:9092', client_id=socket.gethostname())
-        # self.__producer__ = Producer(producer_conf)
-        # self.produce_analysis(text="I love this movie and i would watch it again and again!", uuid=uuid.uuid4())
 
     async def __produce_analysis__(self, text: string, uuid: UUID):
         result = max(self.__classifier__(text)[0], key=lambda x: x['score'])
@@ -54,7 +51,9 @@ class SentimentAnalyser:
             async for msg in self.__consumer__:
                 text = msg.value.decode('utf-8')
                 uuid = UUID(msg.key.decode('utf-8'))
-                await self.__produce_analysis__(text, uuid)
+                await self.__produce_analysis__(text=text, uuid=uuid)
+        except Exception as e:
+            print(f"Unexpected error trying to consume messages: {e}")
         finally:
             await self.__consumer__.stop()
             await self.__producer__.stop()
