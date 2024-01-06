@@ -56,7 +56,7 @@ class RestAPI:
     @staticmethod
     @app.post("/post", tags=["Posts"])
     async def create_post(post: PostCreateModel) -> PostResponse:
-        return db_access.insert_post(post)
+        return await db_access.insert_post(post)
 
     @staticmethod
     @app.put("/post", tags=["Posts"])

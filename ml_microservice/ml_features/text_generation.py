@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import socket
@@ -30,11 +31,14 @@ class TextGenerator:
         self.__producer__ = aiokafka.AIOKafkaProducer(
             bootstrap_servers='kafka:9092', client_id=socket.gethostname())
 
-    async def __produce_analysis__(self, text: string, uuid: UUID, max_length=30, num_return_sequences=5):
+    async def __produce_analysis__(self, text: string, uuid, max_length=30, num_return_sequences=5):
         generated_text = self.generator(text, max_length=max_length,
                                         num_return_sequences=num_return_sequences)
+        byte_value = json.dumps(generated_text).encode("utf-8")
+        byte_key = str(uuid).encode("utf-8")
         try:
-            await self.__producer__.send(topic=KAFKA_RESPONSE_TOPIC, key=uuid, value=generated_text)
+            print("Text Generation: UUID: " + str(uuid) + ", Text: " + generated_text)
+            await self.__producer__.send(topic=KAFKA_RESPONSE_TOPIC, key=byte_key, value=byte_value)
         except Exception as e:
             print(f"Error sending kafka message: {e}")
 
@@ -44,7 +48,8 @@ class TextGenerator:
         try:
             async for msg in self.__consumer__:
                 text = msg.value.decode('utf-8')
-                uuid = UUID(msg.key.decode('utf-8'))
+                uuid = msg.key.decode('utf-8')
+                print("(TG) Consuming UUID: " + str(uuid) + ", Message: " + text)
                 await self.__produce_analysis__(text=text, uuid=uuid)
         except Exception as e:
             print(f"Unexpected error trying to consume messages: {e}")

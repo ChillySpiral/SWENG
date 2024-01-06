@@ -34,12 +34,12 @@ class SentimentAnalyser:
         self.__producer__ = aiokafka.AIOKafkaProducer(
             bootstrap_servers='kafka:9092', client_id=socket.gethostname())
 
-    async def __produce_analysis__(self, text: string, uuid: UUID):
+    async def __produce_analysis__(self, text: string, uuid):
         result = max(self.__classifier__(text)[0], key=lambda x: x['score'])
         byte_value = json.dumps(result).encode("utf-8")
-        # byte_key = json.dumps(uuid, cls=UUIDEncoder)
         byte_key = str(uuid).encode("utf-8")
         try:
+            print("Sentiment Analysis: Key: " + str(byte_key) + ", Value: " + str(byte_value))
             await self.__producer__.send(topic=KAFKA_RESPONSE_TOPIC, key=byte_key, value=byte_value)
         except Exception as e:
             print(f"Error sending message: {e}")
@@ -50,7 +50,8 @@ class SentimentAnalyser:
         try:
             async for msg in self.__consumer__:
                 text = msg.value.decode('utf-8')
-                uuid = UUID(msg.key.decode('utf-8'))
+                uuid = msg.key.decode('utf-8')
+                print("(SA) Consuming UUID: " + str(uuid) + ", Message: " + text)
                 await self.__produce_analysis__(text=text, uuid=uuid)
         except Exception as e:
             print(f"Unexpected error trying to consume messages: {e}")

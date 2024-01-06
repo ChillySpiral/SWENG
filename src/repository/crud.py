@@ -1,17 +1,44 @@
+import json
+import os
 from uuid import UUID
 from datetime import datetime
+import socket
+from dotenv import load_dotenv
 
 from src.repository.db_repository import Repository
 from src.model.post_model import PostResponse, PostModel, PostCreateModel
 from src.model.user_model import UserModel, UserResponse, UserLoginResponse, UserUpdateModel, UserBioModel
 from src.model.comment_model import CommentResponse, CommentModel, CommentCreateModel
 
+import aiokafka
+from transformers import pipeline
+
 # Set up and initialize database here
 db = Repository()
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+load_dotenv("../.env")
+KAFKA_RESPONSE_TOPIC_SA = os.getenv('KAFKA_SENTIMENT_ANALYSIS_RESPONSE')
+KAFKA_REQUEST_TOPIC_SA = os.getenv('KAFKA_SENTIMENT_ANALYSIS_REQUEST')
+KAFKA_RESPONSE_TOPIC_TG = os.getenv('KAFKA_TEXT_GENERATION_RESPONSE')
+KAFKA_REQUEST_TOPIC_TG = os.getenv('KAFKA_TEXT_GENERATION_REQUEST')
+KAFKA_HOST = os.getenv('KAFKA_HOST') + ":9092"
 
 
 # ToDo: retain function names, but replace implementation with code that queries and filters an actual database
 class CRUD:
+
+    def __init__(self):
+        self.__sa__consumer__ = aiokafka.AIOKafkaConsumer(
+            KAFKA_RESPONSE_TOPIC_SA,
+            bootstrap_servers=KAFKA_HOST,
+        )
+        self.__tg__consumer__ = aiokafka.AIOKafkaConsumer(
+            KAFKA_RESPONSE_TOPIC_TG,
+            group_id='sentiment-analysis_consumer',
+            bootstrap_servers=KAFKA_HOST
+        )
+        self.__producer__ = aiokafka.AIOKafkaProducer(
+            bootstrap_servers=KAFKA_HOST, client_id=socket.gethostname())
 
     @staticmethod
     def insert_user(user: UserBioModel) -> UserResponse:
@@ -48,12 +75,6 @@ class CRUD:
         if data.user_id != UUID('00000000000000000000000000000000'):
             success = True
         return UserLoginResponse(success=success, user_id=data.user_id, username=data.username)
-
-    @staticmethod
-    def insert_post(post: PostCreateModel) -> PostResponse:
-        data = db.insert_post(post.user_id, post.text, post.image, datetime.now())
-        return PostResponse(
-            post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, posted=data.posted)
 
     @staticmethod
     def update_post(post: PostModel) -> PostResponse:
@@ -105,3 +126,17 @@ class CRUD:
                 comment_id=comment.comment_id, post_id=comment.post_id, user_id=comment.user_id, text=comment.text,
                 posted=comment.posted))
         return list_out
+
+    async def insert_post(self, post: PostCreateModel) -> PostResponse:
+        data = db.insert_post(post.user_id, post.text, post.image, datetime.now())
+        try:
+            await self.__producer__.start()
+            print(f"Post ID: " + str(data.post_id))
+            byte_value = json.dumps(data.text).encode("utf-8")
+            byte_key = str(data.post_id).encode("utf-8")
+            await self.__producer__.send(topic=KAFKA_REQUEST_TOPIC_SA, key=byte_key, value=byte_value)
+        except Exception as e:
+            print(f"Error sending message: {e}")
+        finally:
+            await self.__producer__.stop()
+            return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, posted=data.posted)

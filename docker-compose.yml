@@ -105,17 +105,27 @@ services:
       - kafka
 
   server:
+    depends_on:
+      - postgres
+      - kafka
     restart: 'always'
-    image: ai23m046/zephyr_server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
     networks:
       - server
       - ui
+      - kafka
     ports:
       - "8080:80"
     links:
       - "postgres:database"
 
   frontend:
+    depends_on:
+      - server
     restart: 'always'
     image: ai23m046/zephyr_ui
     networks:
