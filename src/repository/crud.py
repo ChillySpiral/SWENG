@@ -1,5 +1,6 @@
 import json
 import os
+import uuid as uxid
 from uuid import UUID
 from datetime import datetime
 import socket
@@ -30,6 +31,7 @@ class CRUD:
     def __init__(self):
         self.__sa__consumer__ = aiokafka.AIOKafkaConsumer(
             KAFKA_RESPONSE_TOPIC_SA,
+            group_id='text-generation_consumer',
             bootstrap_servers=KAFKA_HOST,
         )
         self.__tg__consumer__ = aiokafka.AIOKafkaConsumer(
@@ -41,6 +43,7 @@ class CRUD:
             bootstrap_servers=KAFKA_HOST, client_id=socket.gethostname())
 
         self.init_sa = 0
+        self.init_tg = 0
 
     @staticmethod
     def insert_user(user: UserBioModel) -> UserResponse:
@@ -128,6 +131,31 @@ class CRUD:
                 comment_id=comment.comment_id, post_id=comment.post_id, user_id=comment.user_id, text=comment.text,
                 posted=comment.posted))
         return list_out
+
+    async def generate_comment(self, post_id: UUID, comment: str):
+        await self.__producer__.start()
+        if self.init_tg == 0:
+            await self.__tg__consumer__.start()
+            self.init_tg = 1
+
+        byte_value = json.dumps(comment).encode("utf-8")
+        byte_key = str(post_id).encode("utf-8")
+
+        try:
+            print(f"Sending Current Comment: " + comment + " in bytes: " + str(byte_value))
+            print(f"Key: " + str(post_id) + " in bytes:" + str(byte_key))
+            await self.__producer__.send(topic=KAFKA_REQUEST_TOPIC_TG, key=byte_key, value=byte_value)
+            print(f"Awaiting response")
+            async for msg in self.__tg__consumer__:
+                text = msg.value.decode('utf-8')
+                uuid = msg.key.decode('utf-8')
+                print(f"Got sentiment for ID: " + str(uuid) + " message: " + str(text))
+                if UUID(uuid) == post_id:
+                    djs = json.loads(text)
+                    return djs[0]['generated_text']
+        except Exception as e:
+            print(f"Error sending message: {e}")
+        return ""
 
     async def insert_post(self, post: PostCreateModel) -> PostResponse:
         data = db.insert_post(post.user_id, post.text, post.image, datetime.now())

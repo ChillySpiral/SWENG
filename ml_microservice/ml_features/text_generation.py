@@ -26,18 +26,19 @@ class TextGenerator:
     async def initialize(self):
         self.__consumer__ = aiokafka.AIOKafkaConsumer(
             KAFKA_REQUEST_TOPIC,
+            group_id='text-generation_consumer',
             bootstrap_servers='kafka:9092',
         )
         self.__producer__ = aiokafka.AIOKafkaProducer(
             bootstrap_servers='kafka:9092', client_id=socket.gethostname())
 
-    async def __produce_analysis__(self, text: string, uuid, max_length=30, num_return_sequences=5):
+    async def __produce_analysis__(self, text: string, uuid, max_length=30, num_return_sequences=1):
         generated_text = self.generator(text, max_length=max_length,
                                         num_return_sequences=num_return_sequences)
         byte_value = json.dumps(generated_text).encode("utf-8")
         byte_key = str(uuid).encode("utf-8")
+        print("Text Generation: UUID: " + str(uuid) + ", Text: " + str(generated_text))
         try:
-            print("Text Generation: UUID: " + str(uuid) + ", Text: " + generated_text)
             await self.__producer__.send(topic=KAFKA_RESPONSE_TOPIC, key=byte_key, value=byte_value)
         except Exception as e:
             print(f"Error sending kafka message: {e}")

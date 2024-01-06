@@ -101,6 +101,11 @@ class RestAPI:
         return db_access.get_comments_by_post(post_id)
 
     @staticmethod
+    @app.get("/comment/{post_id}/generate", tags=["Comments"])
+    async def get_comment_generated(post_id: UUID, comment: str) -> str:
+        return await db_access.generate_comment(post_id, comment)
+
+    @staticmethod
     def generate_openapi_contract():
         if app.openapi_schema:
             return app.openapi_schema
