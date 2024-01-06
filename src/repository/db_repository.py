@@ -108,6 +108,16 @@ class Repository:
             session.commit()
             return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, posted=post.posted)
 
+    def update_post_sentiment(self, post_id: UUID, sentiment_label: str, sentiment_score: str) -> PostDTO:
+        with Session(self.engine) as session:
+            statement = select(Post).where(Post.post_id == post_id)
+            post = session.scalar(statement)
+            post.post_id = post_id
+            post.sentiment_label = sentiment_label
+            post.sentiment_score = sentiment_score
+            session.commit()
+            return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, sentiment_score=sentiment_score, sentiment_label=sentiment_label, posted=post.posted)
+
     def delete_post(self, post_id: UUID) -> bool:
         with Session(self.engine) as session:
             statement = select(Post).where(Post.post_id == post_id)

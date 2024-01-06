@@ -8,4 +8,6 @@ class PostDTO(BaseModel):
     user_id: UUID
     text: str
     image: str = ""
+    sentiment_label: str = ""
+    sentiment_score: str = ""
     posted: datetime

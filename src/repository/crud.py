@@ -131,6 +131,9 @@ class CRUD:
 
     async def insert_post(self, post: PostCreateModel) -> PostResponse:
         data = db.insert_post(post.user_id, post.text, post.image, datetime.now())
+        if not data.text:
+            return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image,posted=data.posted)
+
         await self.__producer__.start()
         if self.init_sa == 0:
             await self.__sa__consumer__.start()
@@ -146,11 +149,12 @@ class CRUD:
                 uuid = msg.key.decode('utf-8')
                 print(f"Got sentiment for ID: " + str(uuid) + " message: " + str(text))
                 if UUID(uuid) == data.post_id:
-                    # Update Post with Sentiment
+                    djs = json.loads(text)
+                    data = db.update_post_sentiment(data.post_id, djs["label"], str(djs["score"]))
                     break
         except Exception as e:
             print(f"Error sending message: {e}")
         finally:
-            return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, posted=data.posted)
+            return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, sentiment_label=data.sentiment_label, sentiment_score=data.sentiment_score, posted=data.posted)
 
 
