@@ -40,6 +40,8 @@ class CRUD:
         self.__producer__ = aiokafka.AIOKafkaProducer(
             bootstrap_servers=KAFKA_HOST, client_id=socket.gethostname())
 
+        self.init_sa = 0
+
     @staticmethod
     def insert_user(user: UserBioModel) -> UserResponse:
         data = db.insert_user(user.username, user.password, user.bio)
@@ -129,14 +131,26 @@ class CRUD:
 
     async def insert_post(self, post: PostCreateModel) -> PostResponse:
         data = db.insert_post(post.user_id, post.text, post.image, datetime.now())
+        await self.__producer__.start()
+        if self.init_sa == 0:
+            await self.__sa__consumer__.start()
+            self.init_sa = 1
         try:
-            await self.__producer__.start()
             print(f"Post ID: " + str(data.post_id))
             byte_value = json.dumps(data.text).encode("utf-8")
             byte_key = str(data.post_id).encode("utf-8")
             await self.__producer__.send(topic=KAFKA_REQUEST_TOPIC_SA, key=byte_key, value=byte_value)
+            print(f"Waiting for message to consume")
+            async for msg in self.__sa__consumer__:
+                text = msg.value.decode('utf-8')
+                uuid = msg.key.decode('utf-8')
+                print(f"Got sentiment for ID: " + str(uuid) + " message: " + str(text))
+                if UUID(uuid) == data.post_id:
+                    # Update Post with Sentiment
+                    break
         except Exception as e:
             print(f"Error sending message: {e}")
         finally:
-            await self.__producer__.stop()
             return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, posted=data.posted)
+
+
