@@ -106,6 +106,16 @@ class RestAPI:
         return await db_access.generate_comment(post_id, comment)
 
     @staticmethod
+    @app.get("/internal/{post_id}", tags=["Internal"])
+    async def get_post_image(post_id: UUID) -> str:
+        return db_access.internal_get_image_by_post(post_id)
+
+    @staticmethod
+    @app.post("/internal/{post_id}", tags=["Internal"])
+    async def save_small_image(post_id: UUID, small_image: str):
+        return db_access.internal_save_small_image_by_post(post_id, small_image)
+
+    @staticmethod
     def generate_openapi_contract():
         if app.openapi_schema:
             return app.openapi_schema

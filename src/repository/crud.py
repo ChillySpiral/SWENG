@@ -44,10 +44,11 @@ class CRUD:
         self.__rs__consumer__ = aiokafka.AIOKafkaConsumer(
             KAFKA_RESPONSE_TOPIC_RS,
             group_id='resize_consumer',
-            bootstrap_servers='kafka:9092'
+            bootstrap_servers='kafka:9092',
+            fetch_max_bytes=20000000
         )
         self.__producer__ = aiokafka.AIOKafkaProducer(
-            bootstrap_servers=KAFKA_HOST, client_id=socket.gethostname())
+            bootstrap_servers=KAFKA_HOST, client_id=socket.gethostname(), max_request_size=20000000)
 
         self.init_sa = 0
         self.init_tg = 0
@@ -140,6 +141,14 @@ class CRUD:
                 posted=comment.posted))
         return list_out
 
+    @staticmethod
+    def internal_get_image_by_post(post_id: UUID) -> str:
+        return db.internal_get_image_by_post(post_id)
+
+    @staticmethod
+    def internal_save_small_image_by_post(post_id: UUID, small_image: str):
+        db.internal_save_small_image_by_post(post_id, small_image)
+
     async def generate_comment(self, post_id: UUID, comment: str):
         await self.__producer__.start()
         if self.init_tg == 0:
@@ -174,17 +183,9 @@ class CRUD:
                 self.init_rs = 1
             try:
                 print(f"Post ID: " + str(data.post_id))
-                byte_value = json.dumps(data.image).encode("utf-8")
+                byte_value = json.dumps("a").encode("utf-8")
                 byte_key = str(data.post_id).encode("utf-8")
                 await self.__producer__.send(topic=KAFKA_REQUEST_TOPIC_SA, key=byte_key, value=byte_value)
-                print(f"Waiting for message to consume")
-                async for msg in self.__rs__consumer__:
-                    image = msg.value.decode('utf-8')
-                    uuid = msg.key.decode('utf-8')
-                    print(f"Got sentiment for ID: " + str(uuid) + " message: " + str(image))
-                    if UUID(uuid) == data.post_id:
-                        #ToDO
-                        break
             except Exception as e:
                 print(f"Error sending message: {e}")
 
@@ -204,11 +205,17 @@ class CRUD:
                     print(f"Got sentiment for ID: " + str(uuid) + " message: " + str(text))
                     if UUID(uuid) == data.post_id:
                         djs = json.loads(text)
-                        data = db.update_post_sentiment(data.post_id, djs["label"], str(djs["score"]))
+                        db.update_post_sentiment(data.post_id, djs["label"], str(djs["score"]))
                         break
             except Exception as e:
                 print(f"Error sending message: {e}")
+        final_post = db.get_post(post_id=data.post_id)
+        image = ""
+        if final_post.image_small:
+            image = final_post.image_small
+        else:
+            image = final_post.image
 
-        return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image_small, sentiment_label=data.sentiment_label, sentiment_score=data.sentiment_score, posted=data.posted)
+        return PostResponse(post_id=final_post.post_id, user_id=final_post.user_id, text=final_post.text, image=image, sentiment_label=final_post.sentiment_label, sentiment_score=final_post.sentiment_score, posted=final_post.posted)
 
 

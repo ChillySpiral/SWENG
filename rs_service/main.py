@@ -1,7 +1,7 @@
 import asyncio
 import multiprocessing
 
-from rs_service.resizer import Resizer
+from rs_features.resizer import Resizer
 
 
 async def run_resizer():

@@ -93,7 +93,7 @@ class Repository:
 
     def insert_post(self, user_id: UUID, text: str, image: str, posted: datetime, sentiment_label: str = "", sentiment_score: str = "", ) -> PostDTO:
         with Session(self.engine) as session:
-            post = Post(user_id=user_id, text=text, image=image, sentiment_label=sentiment_label, sentiment_score=sentiment_score, posted=posted)
+            post = Post(user_id=user_id, text=text, image=image, image_small="", sentiment_label=sentiment_label, sentiment_score=sentiment_score, posted=posted)
             session.add(post)
             session.commit()
             return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, posted=post.posted)
@@ -118,15 +118,6 @@ class Repository:
             session.commit()
             return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, image_small=post.image_small, sentiment_score=sentiment_score, sentiment_label=sentiment_label, posted=post.posted)
 
-    def update_post_small_image(self, post_id: UUID, small_image: str):
-        with Session(self.engine) as session:
-            statement = select(Post).where(Post.post_id == post_id)
-            post = session.scalar(statement)
-            post.post_id = post_id
-            post.image_small = small_image
-            session.commit()
-            return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, image_small=post.image_small, sentiment_score=post.sentiment_score, sentiment_label=post.sentiment_label, posted=post.posted)
-
     def delete_post(self, post_id: UUID) -> bool:
         with Session(self.engine) as session:
             statement = select(Post).where(Post.post_id == post_id)
@@ -141,7 +132,7 @@ class Repository:
         with Session(self.engine) as session:
             statement = select(Post).where(Post.post_id == post_id)
             post = session.scalar(statement)
-            return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted)
+            return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, image_small=post.image_small, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted)
 
     def get_all_posts(self) -> list[PostDTO]:
         with Session(self.engine) as session:
@@ -170,3 +161,17 @@ class Repository:
             comment_list = session.scalars(statement).all()
             comment_dto_list = list(map(lambda comment: CommentDTO(comment_id=comment.comment_id, post_id=comment.post_id, user_id=comment.user_id, text=comment.text, posted=comment.posted), comment_list))
             return comment_dto_list
+
+    def internal_get_image_by_post(self, post_id: UUID) -> str:
+        with Session(self.engine) as session:
+            statement = select(Post).where(Post.post_id == post_id)
+            post = session.scalar(statement)
+            return post.image
+
+    def internal_save_small_image_by_post(self, post_id: UUID, small_image: str):
+        with Session(self.engine) as session:
+            statement = select(Post).where(Post.post_id == post_id)
+            post = session.scalar(statement)
+            post.post_id = post_id
+            post.image_small = small_image
+            session.commit()

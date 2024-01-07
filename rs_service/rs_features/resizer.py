@@ -8,6 +8,7 @@ import string
 from uuid import UUID
 from PIL import Image
 
+import requests
 import aiokafka
 from dotenv import load_dotenv
 
@@ -27,37 +28,39 @@ class Resizer:
         self.__consumer__ = aiokafka.AIOKafkaConsumer(
             KAFKA_REQUEST_TOPIC,
             group_id='resize_consumer',
-            bootstrap_servers='kafka:9092'
+            bootstrap_servers='kafka:9092',
+            fetch_max_bytes=20000000
         )
 
-        self.__producer__ = aiokafka.AIOKafkaProducer(
-            bootstrap_servers='kafka:9092', client_id=socket.gethostname())
 
     async def consume(self):
         await self.__consumer__.start()
-        await self.__producer__.start()
         try:
             async for msg in self.__consumer__:
                 text = msg.value.decode('utf-8')
-                uuid = msg.key.decode('utf-8')
+                uuid = UUID(msg.key.decode('utf-8'))
 
-                print("(SA) Consuming UUID: " + str(uuid) + ", Message: " + text)
+                print("(RS) Consuming UUID: " + str(uuid) + ", Message: " + text)
+
+                image = requests.get("http://server/internal/"+str(uuid))
+
+                if not image:
+                    continue
+                print(f"Image: " + str(image))
+
                 buffer = io.BytesIO()
-                imgdata = base64.b64decode(text)
+                imgdata = base64.b64decode(image)
                 img = Image.open(io.BytesIO(imgdata))
                 new_img = img.resize((2, 2))  # x, y
                 new_img.save(buffer, format="PNG")
                 img_b64 = base64.b64encode(buffer.getvalue())
+                print(img_b64)
 
-                byte_value = img_b64
-                byte_key = str(uuid).encode("utf-8")
-                try:
-                    print("Resize: Key: " + str(byte_key) + ", Value: " + str(byte_value))
-                    await self.__producer__.send(topic=KAFKA_RESPONSE_TOPIC, key=byte_key, value=byte_value)
-                except Exception as e:
-                    print(f"Error sending message: {e}")
+                #ToDo: Send Image
+                obj = {'small_image': str(img_b64)}
+                requests.post("http://server/internal/"+str(uuid))
+
         except Exception as e:
             print(f"Unexpected error trying to consume messages: {e}")
         finally:
             await self.__consumer__.stop()
-            await self.__producer__.stop()
