@@ -24,8 +24,8 @@ class Post(Base):
     user_id: Mapped[UUID] = mapped_column(ForeignKey("user.user_id"))
     text: Mapped[str] = mapped_column(String())
     image: Mapped[str] = mapped_column(String())
-    sentiment_label = mapped_column(String())
-    sentiment_score = mapped_column(String())
+    sentiment_label: Mapped[str] = mapped_column(String())
+    sentiment_score: Mapped[str] = mapped_column(String())
     posted: Mapped[DateTime] = mapped_column(DateTime())
     user: Mapped["User"] = relationship("User", back_populates="posts")  # 'User' is the class name
 

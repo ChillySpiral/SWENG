@@ -31,9 +31,17 @@ namespace Zephyr.Components.Pages
         private async void OnPosted()
         {
             var newPosts = await BusinessLayer.GetAllPosts();
-            var selectedPosts = newPosts.Where(x => x != null && x.DateCreated > _postViewModelList.First()?.DateCreated).ToList();
-            var insertPosts = selectedPosts.OrderByDescending(x => x?.DateCreated).ToList();
-            _postViewModelList.InsertRange(0, insertPosts);
+            if (newPosts.Count <= 1)
+            {
+                _postViewModelList.InsertRange(0, newPosts);
+            }
+            else
+            {
+                var selectedPosts = newPosts.Where(x => x != null && x.DateCreated > _postViewModelList.First()?.DateCreated).ToList();
+                var insertPosts = selectedPosts.OrderByDescending(x => x?.DateCreated).ToList();
+                _postViewModelList.InsertRange(0, insertPosts);
+            }
+
             StateHasChanged();
         }
     }

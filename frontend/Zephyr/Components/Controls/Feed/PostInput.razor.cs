@@ -29,6 +29,8 @@ namespace Zephyr.Components.Controls.Feed
 
         public bool UserLoggedIn { get; set; } = false;
 
+        public bool IsBusy { get; set; } = false;
+
         private string Text { get; set; } = string.Empty;
 
         private string? ImageUrl { get; set; } = null;
@@ -107,7 +109,7 @@ namespace Zephyr.Components.Controls.Feed
             {
                 if (!UserLoggedIn || UserId == null)
                     return;
-
+                IsBusy = true;
                 var newPost = new PostViewModel()
                 {
                     User = new UserViewModel()
@@ -123,6 +125,7 @@ namespace Zephyr.Components.Controls.Feed
 
                 ImageUrl = null;
                 Text = "";
+                IsBusy = false;
                 StateHasChanged();
             }
             catch (JSDisconnectedException ex)

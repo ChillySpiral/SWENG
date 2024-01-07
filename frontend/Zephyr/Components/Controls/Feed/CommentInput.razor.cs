@@ -28,6 +28,8 @@ namespace Zephyr.Components.Controls.Feed
 
         public bool UserLoggedIn { get; set; } = false;
 
+        public bool IsBusy { get; set; } = false;
+
         private string Text { get; set; } = string.Empty;
 
         private Guid? UserId { get; set; }
@@ -119,6 +121,25 @@ namespace Zephyr.Components.Controls.Feed
                 await OnPosted.InvokeAsync();
 
                 Text = "";
+                StateHasChanged();
+            }
+            catch (JSDisconnectedException ex)
+            {
+                // Ignore
+            }
+        }
+
+        private async void OnGenerate()
+        {
+            try
+            {
+                if (!UserLoggedIn || UserId == null)
+                    return;
+                IsBusy = true;
+                var output = await BusinessLayer.GenerateComment(PostId, Text);
+
+                Text = output ?? string.Empty;
+                IsBusy = false;
                 StateHasChanged();
             }
             catch (JSDisconnectedException ex)

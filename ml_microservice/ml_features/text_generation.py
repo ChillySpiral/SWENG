@@ -32,7 +32,7 @@ class TextGenerator:
         self.__producer__ = aiokafka.AIOKafkaProducer(
             bootstrap_servers='kafka:9092', client_id=socket.gethostname())
 
-    async def __produce_analysis__(self, text: string, uuid, max_length=30, num_return_sequences=1):
+    async def __produce_analysis__(self, text: string, uuid, max_length=140, num_return_sequences=1):
         generated_text = self.generator(text, max_length=max_length,
                                         num_return_sequences=num_return_sequences)
         byte_value = json.dumps(generated_text).encode("utf-8")

@@ -85,7 +85,7 @@ class CRUD:
     def update_post(post: PostModel) -> PostResponse:
         data = db.update_post(post.post_id, post.text, post.image)
         return PostResponse(
-            post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, posted=data.posted)
+            post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, sentiment_label=data.sentiment_label, sentiment_score=data.sentiment_score, posted=data.posted)
 
     @staticmethod
     def delete_post(post_id: UUID) -> bool:
@@ -95,7 +95,7 @@ class CRUD:
     def get_post(post_id: UUID) -> PostResponse:
         data = db.get_post(post_id)
         return PostResponse(
-            post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, posted=data.posted)
+            post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, sentiment_label=data.sentiment_label, sentiment_score=data.sentiment_score, posted=data.posted)
 
     @staticmethod
     def get_all_posts() -> list[PostResponse]:
@@ -103,7 +103,7 @@ class CRUD:
         list_out: list[PostResponse] = []
         for post in data:
             list_out.append(PostResponse(
-                post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, posted=post.posted))
+                post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted))
         return list_out
 
     @staticmethod
@@ -112,7 +112,7 @@ class CRUD:
         list_out: list[PostResponse] = []
         for post in data:
             list_out.append(PostResponse(
-                post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, posted=post.posted))
+                post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted))
         return list_out
 
     @staticmethod
@@ -160,7 +160,7 @@ class CRUD:
     async def insert_post(self, post: PostCreateModel) -> PostResponse:
         data = db.insert_post(post.user_id, post.text, post.image, datetime.now())
         if not data.text:
-            return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image,posted=data.posted)
+            return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, sentiment_label=data.sentiment_label, sentiment_score=data.sentiment_score, posted=data.posted)
 
         await self.__producer__.start()
         if self.init_sa == 0:

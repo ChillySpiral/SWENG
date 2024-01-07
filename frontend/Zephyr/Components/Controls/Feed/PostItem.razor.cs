@@ -17,10 +17,32 @@ namespace Zephyr.Components.Controls.Feed
         [Inject] 
         private NavigationManager Navigation { get; set; }
 
+        public string SentimentIcon { get; set; } = "question_mark";
+
         protected override void OnParametersSet()
         {
             if (string.IsNullOrEmpty(Data.ImageUrl))
                 Data.ImageUrl = null;
+
+            if (Data.SentimentValue != null)
+            {
+                switch (Data.SentimentLabel)
+                {
+                    case PostViewModel.Sentiment.Negative:
+                        SentimentIcon = "sentiment_very_dissatisfied";
+                        break;
+                    case PostViewModel.Sentiment.Positive:
+                        SentimentIcon = "sentiment_very_satisfied";
+                        break;
+                    case PostViewModel.Sentiment.Neutral:
+                        SentimentIcon = "sentiment_neutral";
+                        break;
+                    default:
+                        SentimentIcon = "question_mark";
+                        break;
+                }
+                StateHasChanged();
+            }
         }
 
         private void NavigateToUser()

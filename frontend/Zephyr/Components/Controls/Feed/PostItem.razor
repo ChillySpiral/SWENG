@@ -6,9 +6,11 @@
         {
             <RadzenImage Path="@Data.ImageUrl" Style=@Style/>
         }
-    </RadzenStack>
+    
     @if (IsFeed)
     {
-        <b onclick="@NavigateToPost" onmouseover="" style="cursor: pointer;"><RadzenIcon Icon="markunread_mailbox" /></b>
+        <b onclick="@NavigateToPost" onmouseover="" style="cursor: pointer;"><RadzenIcon Icon="comment" Style="float: right;"/></b>
     }
+    <div style="font-size: smaller; margin-top: 15px;"><i>Sentiment Analysis: </i><RadzenIcon Icon="@SentimentIcon"></RadzenIcon><i> Score: </i><i>@Data.SentimentValue</i></div>
+    </RadzenStack>
 </RadzenCard>

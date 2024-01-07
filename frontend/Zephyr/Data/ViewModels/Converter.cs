@@ -69,6 +69,28 @@ namespace Zephyr.Data.ViewModels
             };
         }
 
+        public static PostViewModel.Sentiment? ConvertToSentiment(string input)
+        {
+            if(string.IsNullOrWhiteSpace(input))
+                return null;
+            if (input.Equals("negative"))
+            {
+                return PostViewModel.Sentiment.Negative;
+            }
+            else if (input.Equals("neutral"))
+            {
+                return PostViewModel.Sentiment.Neutral;
+            }
+            else if (input.Equals("positive"))
+            {
+                return PostViewModel.Sentiment.Positive;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public static PostViewModel ConvertTo(this PostResponse source)
         {
             return new PostViewModel()
@@ -80,6 +102,8 @@ namespace Zephyr.Data.ViewModels
                 },
                 Text = source.Text,
                 ImageUrl = source.Image,
+                SentimentLabel = ConvertToSentiment(source.Sentiment_label),
+                SentimentValue = source.Sentiment_score,
                 DateCreated = source.Posted
             };
         }
