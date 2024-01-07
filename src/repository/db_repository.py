@@ -106,7 +106,7 @@ class Repository:
             post.text = text
             post.image = image
             session.commit()
-            return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted)
+            return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, image_small=post.image_small, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted)
 
     def update_post_sentiment(self, post_id: UUID, sentiment_label: str, sentiment_score: str) -> PostDTO:
         with Session(self.engine) as session:
@@ -116,7 +116,16 @@ class Repository:
             post.sentiment_label = sentiment_label
             post.sentiment_score = sentiment_score
             session.commit()
-            return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, sentiment_score=sentiment_score, sentiment_label=sentiment_label, posted=post.posted)
+            return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, image_small=post.image_small, sentiment_score=sentiment_score, sentiment_label=sentiment_label, posted=post.posted)
+
+    def update_post_small_image(self, post_id: UUID, small_image: str):
+        with Session(self.engine) as session:
+            statement = select(Post).where(Post.post_id == post_id)
+            post = session.scalar(statement)
+            post.post_id = post_id
+            post.image_small = small_image
+            session.commit()
+            return PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, image_small=post.image_small, sentiment_score=post.sentiment_score, sentiment_label=post.sentiment_label, posted=post.posted)
 
     def delete_post(self, post_id: UUID) -> bool:
         with Session(self.engine) as session:
@@ -138,14 +147,14 @@ class Repository:
         with Session(self.engine) as session:
             statement = select(Post)
             post_list = session.scalars(statement).all()
-            post_dto_list = list(map(lambda post: PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted), post_list))
+            post_dto_list = list(map(lambda post: PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, image_small=post.image_small, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted), post_list))
             return post_dto_list
 
     def get_posts_by_user(self, user_id: UUID) -> list[PostDTO]:
         with Session(self.engine) as session:
             statement = select(Post).where(Post.user_id == user_id)
             post_list = session.scalars(statement).all()
-            post_dto_list = list(map(lambda post: PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted), post_list))
+            post_dto_list = list(map(lambda post: PostDTO(post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, image_small=post.image_small, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted), post_list))
             return post_dto_list
 
     def insert_comment_to_post(self,post_id: UUID, user_id: UUID, text: str, posted: datetime) -> CommentDTO:

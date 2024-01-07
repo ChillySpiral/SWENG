@@ -22,6 +22,8 @@ KAFKA_RESPONSE_TOPIC_SA = os.getenv('KAFKA_SENTIMENT_ANALYSIS_RESPONSE')
 KAFKA_REQUEST_TOPIC_SA = os.getenv('KAFKA_SENTIMENT_ANALYSIS_REQUEST')
 KAFKA_RESPONSE_TOPIC_TG = os.getenv('KAFKA_TEXT_GENERATION_RESPONSE')
 KAFKA_REQUEST_TOPIC_TG = os.getenv('KAFKA_TEXT_GENERATION_REQUEST')
+KAFKA_REQUEST_TOPIC_RS = os.getenv('KAFKA_RESIZE_REQUEST')
+KAFKA_RESPONSE_TOPIC_RS = os.getenv('KAFKA_RESIZE_RESPONSE')
 KAFKA_HOST = os.getenv('KAFKA_HOST') + ":9092"
 
 
@@ -39,11 +41,17 @@ class CRUD:
             group_id='sentiment-analysis_consumer',
             bootstrap_servers=KAFKA_HOST
         )
+        self.__rs__consumer__ = aiokafka.AIOKafkaConsumer(
+            KAFKA_RESPONSE_TOPIC_RS,
+            group_id='resize_consumer',
+            bootstrap_servers='kafka:9092'
+        )
         self.__producer__ = aiokafka.AIOKafkaProducer(
             bootstrap_servers=KAFKA_HOST, client_id=socket.gethostname())
 
         self.init_sa = 0
         self.init_tg = 0
+        self.init_rs = 0
 
     @staticmethod
     def insert_user(user: UserBioModel) -> UserResponse:
@@ -103,7 +111,7 @@ class CRUD:
         list_out: list[PostResponse] = []
         for post in data:
             list_out.append(PostResponse(
-                post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted))
+                post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image_small, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted))
         return list_out
 
     @staticmethod
@@ -112,7 +120,7 @@ class CRUD:
         list_out: list[PostResponse] = []
         for post in data:
             list_out.append(PostResponse(
-                post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted))
+                post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image_small, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted))
         return list_out
 
     @staticmethod
@@ -159,30 +167,48 @@ class CRUD:
 
     async def insert_post(self, post: PostCreateModel) -> PostResponse:
         data = db.insert_post(post.user_id, post.text, post.image, datetime.now())
-        if not data.text:
-            return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, sentiment_label=data.sentiment_label, sentiment_score=data.sentiment_score, posted=data.posted)
-
         await self.__producer__.start()
-        if self.init_sa == 0:
-            await self.__sa__consumer__.start()
-            self.init_sa = 1
-        try:
-            print(f"Post ID: " + str(data.post_id))
-            byte_value = json.dumps(data.text).encode("utf-8")
-            byte_key = str(data.post_id).encode("utf-8")
-            await self.__producer__.send(topic=KAFKA_REQUEST_TOPIC_SA, key=byte_key, value=byte_value)
-            print(f"Waiting for message to consume")
-            async for msg in self.__sa__consumer__:
-                text = msg.value.decode('utf-8')
-                uuid = msg.key.decode('utf-8')
-                print(f"Got sentiment for ID: " + str(uuid) + " message: " + str(text))
-                if UUID(uuid) == data.post_id:
-                    djs = json.loads(text)
-                    data = db.update_post_sentiment(data.post_id, djs["label"], str(djs["score"]))
-                    break
-        except Exception as e:
-            print(f"Error sending message: {e}")
-        finally:
-            return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image, sentiment_label=data.sentiment_label, sentiment_score=data.sentiment_score, posted=data.posted)
+        if data.image:
+            if self.init_rs == 0:
+                await self.__rs__consumer__.start()
+                self.init_rs = 1
+            try:
+                print(f"Post ID: " + str(data.post_id))
+                byte_value = json.dumps(data.image).encode("utf-8")
+                byte_key = str(data.post_id).encode("utf-8")
+                await self.__producer__.send(topic=KAFKA_REQUEST_TOPIC_SA, key=byte_key, value=byte_value)
+                print(f"Waiting for message to consume")
+                async for msg in self.__rs__consumer__:
+                    image = msg.value.decode('utf-8')
+                    uuid = msg.key.decode('utf-8')
+                    print(f"Got sentiment for ID: " + str(uuid) + " message: " + str(image))
+                    if UUID(uuid) == data.post_id:
+                        #ToDO
+                        break
+            except Exception as e:
+                print(f"Error sending message: {e}")
+
+        elif data.text:
+            if self.init_sa == 0:
+                await self.__sa__consumer__.start()
+                self.init_sa = 1
+            try:
+                print(f"Post ID: " + str(data.post_id))
+                byte_value = json.dumps(data.text).encode("utf-8")
+                byte_key = str(data.post_id).encode("utf-8")
+                await self.__producer__.send(topic=KAFKA_REQUEST_TOPIC_SA, key=byte_key, value=byte_value)
+                print(f"Waiting for message to consume")
+                async for msg in self.__sa__consumer__:
+                    text = msg.value.decode('utf-8')
+                    uuid = msg.key.decode('utf-8')
+                    print(f"Got sentiment for ID: " + str(uuid) + " message: " + str(text))
+                    if UUID(uuid) == data.post_id:
+                        djs = json.loads(text)
+                        data = db.update_post_sentiment(data.post_id, djs["label"], str(djs["score"]))
+                        break
+            except Exception as e:
+                print(f"Error sending message: {e}")
+
+        return PostResponse(post_id=data.post_id, user_id=data.user_id, text=data.text, image=data.image_small, sentiment_label=data.sentiment_label, sentiment_score=data.sentiment_score, posted=data.posted)
 
 

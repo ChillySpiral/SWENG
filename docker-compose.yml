@@ -136,11 +136,24 @@ services:
       - "server:api"
 
   ml_microservice:
+    depends_on:
+      - kafka
     build:
       context: .
       dockerfile: ml_microservice/Dockerfile
     env_file:
       - ml_microservice/.env
+    networks:
+      - kafka
+
+  rs_service:
+    depends_on:
+      - kafka
+    build:
+      context: .
+      dockerfile: rs_service/Dockerfile
+    env_file:
+      - rs_service/.env
     networks:
       - kafka
 
