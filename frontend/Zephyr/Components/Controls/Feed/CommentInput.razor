@@ -1,5 +1,6 @@
 ﻿<RadzenCard Style="padding-bottom: 50px;" Visible="@UserLoggedIn">
     <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Comment...</RadzenText>
     <RadzenTextArea Style="max-height: 400px; min-height: 150px;" MaxLength=256 @bind-Value="@Text" class="w-100" />
-    <RadzenButton Click="OnPost" Text="Posten" ButtonStyle="ButtonStyle.Primary" Style="float:right; margin-top: 10px;" />
+    <RadzenButton Click="OnPost" Text="Post" ButtonStyle="ButtonStyle.Primary" Style="float:right; margin-top: 10px;" />
+    <RadzenButton Click="OnGenerate" Text="Generate Text with GPT-2" ButtonStyle="ButtonStyle.Warning" Style="float:right; margin-top: 10px; margin-right: 20px;" IsBusy="IsBusy"/>
 </RadzenCard>

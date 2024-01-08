@@ -143,4 +143,9 @@ public class BusinessLayer : IBusinessLayer
         return response.ConvertTo();
     }
 
+    public async Task<string?> GenerateComment(Guid postId, string comment)
+    {
+        var response = await ServerClient.CommentGenerateAsync(postId, comment);
+        return response;
+    }
 }

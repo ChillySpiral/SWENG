@@ -105,17 +105,25 @@ services:
       - kafka
 
   server:
+    depends_on:
+      - postgres
+      - kafka
     restart: 'always'
     image: ai23m046/zephyr_server
+    env_file:
+      - .env
     networks:
       - server
       - ui
+      - kafka
     ports:
       - "8080:80"
     links:
       - "postgres:database"
 
   frontend:
+    depends_on:
+      - server
     restart: 'always'
     image: ai23m046/zephyr_ui
     networks:
@@ -126,11 +134,22 @@ services:
       - "server:api"
 
   ml_microservice:
-    build:
-      context: .
-      dockerfile: ml_microservice/Dockerfile
+    restart: 'always'
+    depends_on:
+      - kafka
+    image: ai23m046/zephyr_ml_service
     env_file:
       - ml_microservice/.env
+    networks:
+      - kafka
+
+  rs_service:
+    restart: 'always'
+    depends_on:
+      - kafka
+    image: ai23m046/zephyr_rs_service
+    env_file:
+      - rs_service/.env
     networks:
       - kafka
 
