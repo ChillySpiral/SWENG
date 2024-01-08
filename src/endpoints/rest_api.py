@@ -6,7 +6,7 @@ from datetime import datetime
 
 from src.model.comment_model import CommentResponse, CommentCreateModel
 from src.model.user_model import UserModel, UserUpdateModel, UserBioModel, UserResponse, UserLoginResponse
-from src.model.post_model import PostModel, PostCreateModel, PostResponse
+from src.model.post_model import PostModel, PostCreateModel, PostResponse, PostImage
 from src.repository.crud import CRUD
 
 app = FastAPI()
@@ -111,9 +111,9 @@ class RestAPI:
         return db_access.internal_get_image_by_post(post_id)
 
     @staticmethod
-    @app.post("/internal/{post_id}", tags=["Internal"])
-    async def save_small_image(post_id: UUID, small_image: str):
-        return db_access.internal_save_small_image_by_post(post_id, small_image)
+    @app.post("/internal", tags=["Internal"])
+    async def save_small_image(post: PostImage):
+        return db_access.internal_save_small_image_by_post(post.post_id, post.image)
 
     @staticmethod
     def generate_openapi_contract():

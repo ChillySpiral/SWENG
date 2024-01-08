@@ -28,6 +28,13 @@ KAFKA_HOST = os.getenv('KAFKA_HOST') + ":9092"
 
 
 # ToDo: retain function names, but replace implementation with code that queries and filters an actual database
+def choose_image(image: str, small_image: str) -> str:
+    if small_image and small_image != "":
+        return small_image
+    else:
+        return image
+
+
 class CRUD:
 
     def __init__(self):
@@ -41,14 +48,8 @@ class CRUD:
             group_id='sentiment-analysis_consumer',
             bootstrap_servers=KAFKA_HOST
         )
-        self.__rs__consumer__ = aiokafka.AIOKafkaConsumer(
-            KAFKA_RESPONSE_TOPIC_RS,
-            group_id='resize_consumer',
-            bootstrap_servers='kafka:9092',
-            fetch_max_bytes=20000000
-        )
         self.__producer__ = aiokafka.AIOKafkaProducer(
-            bootstrap_servers=KAFKA_HOST, client_id=socket.gethostname(), max_request_size=20000000)
+            bootstrap_servers=KAFKA_HOST, client_id=socket.gethostname())
 
         self.init_sa = 0
         self.init_tg = 0
@@ -112,7 +113,7 @@ class CRUD:
         list_out: list[PostResponse] = []
         for post in data:
             list_out.append(PostResponse(
-                post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image_small, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted))
+                post_id=post.post_id, user_id=post.user_id, text=post.text, image=choose_image(post.image, post.image_small), sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted))
         return list_out
 
     @staticmethod
@@ -121,7 +122,7 @@ class CRUD:
         list_out: list[PostResponse] = []
         for post in data:
             list_out.append(PostResponse(
-                post_id=post.post_id, user_id=post.user_id, text=post.text, image=post.image_small, sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted))
+                post_id=post.post_id, user_id=post.user_id, text=post.text, image=choose_image(post.image, post.image_small), sentiment_label=post.sentiment_label, sentiment_score=post.sentiment_score, posted=post.posted))
         return list_out
 
     @staticmethod
@@ -178,18 +179,15 @@ class CRUD:
         data = db.insert_post(post.user_id, post.text, post.image, datetime.now())
         await self.__producer__.start()
         if data.image:
-            if self.init_rs == 0:
-                await self.__rs__consumer__.start()
-                self.init_rs = 1
             try:
                 print(f"Post ID: " + str(data.post_id))
                 byte_value = json.dumps("a").encode("utf-8")
                 byte_key = str(data.post_id).encode("utf-8")
-                await self.__producer__.send(topic=KAFKA_REQUEST_TOPIC_SA, key=byte_key, value=byte_value)
+                await self.__producer__.send(topic=KAFKA_REQUEST_TOPIC_RS, key=byte_key, value=byte_value)
             except Exception as e:
                 print(f"Error sending message: {e}")
 
-        elif data.text:
+        if data.text:
             if self.init_sa == 0:
                 await self.__sa__consumer__.start()
                 self.init_sa = 1
@@ -210,12 +208,5 @@ class CRUD:
             except Exception as e:
                 print(f"Error sending message: {e}")
         final_post = db.get_post(post_id=data.post_id)
-        image = ""
-        if final_post.image_small:
-            image = final_post.image_small
-        else:
-            image = final_post.image
 
-        return PostResponse(post_id=final_post.post_id, user_id=final_post.user_id, text=final_post.text, image=image, sentiment_label=final_post.sentiment_label, sentiment_score=final_post.sentiment_score, posted=final_post.posted)
-
-
+        return PostResponse(post_id=final_post.post_id, user_id=final_post.user_id, text=final_post.text, image=choose_image(final_post.image, final_post.image_small), sentiment_label=final_post.sentiment_label, sentiment_score=final_post.sentiment_score, posted=final_post.posted)

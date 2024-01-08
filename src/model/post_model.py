@@ -24,3 +24,8 @@ class PostResponse(BaseModel):
     sentiment_label: str = None
     sentiment_score: str = None
     posted: datetime
+
+
+class PostImage(BaseModel):
+    post_id: UUID
+    image: str

@@ -62,9 +62,6 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_LOG_DIRS: /var/lib/kafka/data
-      KAFKA_MESSAGE_MAX_BYTES: 20000000
-      KAFKA_MAX_REQUEST_SIZE: 20000000
-      KAFKA_PRODUCER_MAX_REQUEST_SIZE: 20000000
       #KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
     networks:
       - kafka
@@ -130,7 +127,9 @@ services:
     depends_on:
       - server
     restart: 'always'
-    image: ai23m046/zephyr_ui
+    build:
+      context: ./frontend/Zephyr
+      dockerfile: ./Dockerfile
     networks:
       - ui
     ports:
@@ -139,6 +138,7 @@ services:
       - "server:api"
 
   ml_microservice:
+    restart: 'always'
     depends_on:
       - kafka
     build:
@@ -150,6 +150,7 @@ services:
       - kafka
 
   rs_service:
+    restart: 'always'
     depends_on:
       - kafka
     build:
