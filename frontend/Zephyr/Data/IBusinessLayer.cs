@@ -26,5 +26,13 @@ namespace Zephyr.Data
         public Task<PostViewModel?> GetNewestPost();
 
         #endregion
+
+        #region Comment
+
+        public Task<List<CommentViewModel?>> GetPostComments(Guid postId);
+        public Task<CommentViewModel?> AddComment(CommentViewModel comment);
+        public Task<string?> GenerateComment(Guid postId,  string comment); 
+
+        #endregion
     }
 }

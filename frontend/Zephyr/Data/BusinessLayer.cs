@@ -119,4 +119,33 @@ public class BusinessLayer : IBusinessLayer
         var response = await ServerClient.PostNewestAsync();
         return response.ConvertTo();
     }
+
+    public async Task<List<CommentViewModel?>> GetPostComments(Guid postId)
+    {
+        var response = await ServerClient.CommentGetAsync(postId);
+        var res = new List<CommentViewModel?>();
+        if (response is { Count: > 0 })
+            res.AddRange(response.Select(commentResponse => commentResponse.ConvertTo()));
+
+        foreach (var comment in res)
+        {
+            var user = await GetUser(comment.User.Id);
+            if (user != null) 
+                comment.User = user;
+        }
+
+        return res;
+    }
+
+    public async Task<CommentViewModel?> AddComment(CommentViewModel comment)
+    {
+        var response = await ServerClient.CommentPostAsync(comment.ConvertToCommentCreateModel());
+        return response.ConvertTo();
+    }
+
+    public async Task<string?> GenerateComment(Guid postId, string comment)
+    {
+        var response = await ServerClient.CommentGenerateAsync(postId, comment);
+        return response;
+    }
 }

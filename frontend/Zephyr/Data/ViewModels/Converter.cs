@@ -69,6 +69,28 @@ namespace Zephyr.Data.ViewModels
             };
         }
 
+        public static PostViewModel.Sentiment? ConvertToSentiment(string input)
+        {
+            if(string.IsNullOrWhiteSpace(input))
+                return null;
+            if (input.Equals("negative"))
+            {
+                return PostViewModel.Sentiment.Negative;
+            }
+            else if (input.Equals("neutral"))
+            {
+                return PostViewModel.Sentiment.Neutral;
+            }
+            else if (input.Equals("positive"))
+            {
+                return PostViewModel.Sentiment.Positive;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public static PostViewModel ConvertTo(this PostResponse source)
         {
             return new PostViewModel()
@@ -80,6 +102,8 @@ namespace Zephyr.Data.ViewModels
                 },
                 Text = source.Text,
                 ImageUrl = source.Image,
+                SentimentLabel = ConvertToSentiment(source.Sentiment_label),
+                SentimentValue = source.Sentiment_score,
                 DateCreated = source.Posted
             };
         }
@@ -95,6 +119,34 @@ namespace Zephyr.Data.ViewModels
                 },
                 Text = source.Text,
                 ImageUrl = source.Image
+            };
+        }
+
+        public static CommentViewModel ConvertTo(this CommentResponse source)
+        {
+            return new CommentViewModel()
+            {
+                Id = source.Comment_id,
+                User = new UserViewModel()
+                {
+                    Id = source.User_id
+                },
+                Text = source.Text,
+                DateCreated = source.Posted
+            };
+        }
+
+        public static CommentViewModel ConvertTo(this CommentCreateModel source)
+        {
+            return new CommentViewModel()
+            {
+                Id = Guid.Empty,
+                PostId = source.Post_id,
+                User = new UserViewModel()
+                {
+                    Id = source.User_id
+                },
+                Text = source.Text,
             };
         }
 
@@ -181,6 +233,28 @@ namespace Zephyr.Data.ViewModels
                 User_id = source.User.Id,
                 Text = source.Text,
                 Image = source.ImageUrl,
+                Posted = source.DateCreated.Value
+            };
+        }
+
+        public static CommentCreateModel ConvertToCommentCreateModel(this CommentViewModel source)
+        {
+            return new CommentCreateModel()
+            {
+                Post_id = source.PostId,
+                User_id = source.User.Id,
+                Text = source.Text,
+            };
+        }
+
+        public static CommentResponse ConvertToCommentResponse(this CommentViewModel source)
+        {
+            return new CommentResponse()
+            {
+                Comment_id = source.Id,
+                Post_id = source.Id,
+                User_id = source.User.Id,
+                Text = source.Text,
                 Posted = source.DateCreated.Value
             };
         }

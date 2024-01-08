@@ -1,25 +1,24 @@
 ﻿using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
-using Zephyr.Data;
 using Zephyr.Data.ViewModels;
+using Zephyr.Data;
 using Zephyr.Services;
 
 namespace Zephyr.Components.Controls.Feed
 {
-    public partial class PostInput
+    public partial class CommentInput
     {
-        [Parameter] 
-        public EventCallback OnPosted { get; set; }
+        [Parameter] public EventCallback OnPosted { get; set; }
 
-        [Inject]
-        public IBusinessLayer BusinessLayer { get; set; }
+        [Parameter]
+        public Guid PostId { get; set; }
 
-        [Inject]
-        public required ISessionStorageService SessionStorageService { get; set; }
+        [Inject] public IBusinessLayer BusinessLayer { get; set; }
 
-        [Inject]
-        public required IEventService EventService { get; set; }
+        [Inject] public required ISessionStorageService SessionStorageService { get; set; }
+
+        [Inject] public required IEventService EventService { get; set; }
 
         protected override void OnAfterRender(bool firstRender)
         {
@@ -32,8 +31,6 @@ namespace Zephyr.Components.Controls.Feed
         public bool IsBusy { get; set; } = false;
 
         private string Text { get; set; } = string.Empty;
-
-        private string? ImageUrl { get; set; } = null;
 
         private Guid? UserId { get; set; }
 
@@ -109,22 +106,39 @@ namespace Zephyr.Components.Controls.Feed
             {
                 if (!UserLoggedIn || UserId == null)
                     return;
-                IsBusy = true;
-                var newPost = new PostViewModel()
+
+                var newComment = new CommentViewModel()
                 {
+                    PostId = PostId,
                     User = new UserViewModel()
                     {
                         Id = UserId.Value,
                     },
-                    ImageUrl = ImageUrl ?? string.Empty,
                     Text = Text
                 };
 
-                await BusinessLayer.AddPost(newPost);
+                await BusinessLayer.AddComment(newComment);
                 await OnPosted.InvokeAsync();
 
-                ImageUrl = null;
                 Text = "";
+                StateHasChanged();
+            }
+            catch (JSDisconnectedException ex)
+            {
+                // Ignore
+            }
+        }
+
+        private async void OnGenerate()
+        {
+            try
+            {
+                if (!UserLoggedIn || UserId == null)
+                    return;
+                IsBusy = true;
+                var output = await BusinessLayer.GenerateComment(PostId, Text);
+
+                Text = output ?? string.Empty;
                 IsBusy = false;
                 StateHasChanged();
             }
@@ -136,3 +150,5 @@ namespace Zephyr.Components.Controls.Feed
 
     }
 }
+
+

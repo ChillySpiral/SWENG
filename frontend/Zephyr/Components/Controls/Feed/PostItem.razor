@@ -4,7 +4,13 @@
         <RadzenText TextStyle="TextStyle.Caption"><div class="rz-text-wrap">@Data.Text</div></RadzenText>
         @if (Data.ImageUrl != null)
         {
-            <RadzenImage Path="@Data.ImageUrl" Style="width: 400px; height: 400px; margin-left:auto; margin-right:auto;"/>
+            <RadzenImage Path="@Data.ImageUrl" Style=@Style/>
         }
+    
+    @if (IsFeed)
+    {
+        <b onclick="@NavigateToPost" onmouseover="" style="cursor: pointer;"><RadzenIcon Icon="comment" Style="float: right;"/></b>
+    }
+    <div style="font-size: smaller; margin-top: 15px;"><i>Sentiment Analysis: </i><RadzenIcon Icon="@SentimentIcon"></RadzenIcon><i> Score: </i><i>@Data.SentimentValue</i></div>
     </RadzenStack>
 </RadzenCard>

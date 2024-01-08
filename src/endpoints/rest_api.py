@@ -3,8 +3,10 @@ from fastapi.openapi.utils import get_openapi
 
 from uuid import UUID
 from datetime import datetime
+
+from src.model.comment_model import CommentResponse, CommentCreateModel
 from src.model.user_model import UserModel, UserUpdateModel, UserBioModel, UserResponse, UserLoginResponse
-from src.model.post_model import PostModel, PostCreateModel, PostResponse
+from src.model.post_model import PostModel, PostCreateModel, PostResponse, PostImage
 from src.repository.crud import CRUD
 
 app = FastAPI()
@@ -54,7 +56,7 @@ class RestAPI:
     @staticmethod
     @app.post("/post", tags=["Posts"])
     async def create_post(post: PostCreateModel) -> PostResponse:
-        return db_access.insert_post(post)
+        return await db_access.insert_post(post)
 
     @staticmethod
     @app.put("/post", tags=["Posts"])
@@ -87,6 +89,31 @@ class RestAPI:
                 dt_max = post.posted
                 idx_newest = idx
         return data[idx_newest]
+
+    @staticmethod
+    @app.post("/comment", tags=["Comments"])
+    async def create_comment(comment: CommentCreateModel) -> CommentResponse:
+        return db_access.insert_comment(comment)
+
+    @staticmethod
+    @app.get("/comment/{post_id}", tags=["Comments"])
+    async def get_comments_by_post(post_id: UUID) -> list[CommentResponse]:
+        return db_access.get_comments_by_post(post_id)
+
+    @staticmethod
+    @app.get("/comment/{post_id}/generate", tags=["Comments"])
+    async def get_comment_generated(post_id: UUID, comment: str) -> str:
+        return await db_access.generate_comment(post_id, comment)
+
+    @staticmethod
+    @app.get("/internal/{post_id}", tags=["Internal"])
+    async def get_post_image(post_id: UUID) -> str:
+        return db_access.internal_get_image_by_post(post_id)
+
+    @staticmethod
+    @app.post("/internal", tags=["Internal"])
+    async def save_small_image(post: PostImage):
+        return db_access.internal_save_small_image_by_post(post.post_id, post.image)
 
     @staticmethod
     def generate_openapi_contract():
